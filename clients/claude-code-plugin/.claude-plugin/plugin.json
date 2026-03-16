@@ -1,0 +1,9 @@
+{
+  "name": "idle-rpg",
+  "version": "0.1.0",
+  "description": "Track your Claude Code activity and level up your Idle RPG character",
+  "author": {
+    "name": "sprint-undertaker"
+  },
+  "skills": "./skills/"
+}

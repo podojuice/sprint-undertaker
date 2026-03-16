@@ -39,18 +39,18 @@
   - status line을 항상 보이는 요약 표면으로 사용
   - project skill / command를 상세 조회 표면으로 사용
   - hook notification은 이벤트성 메시지로 제한
-- [ ] Claude Code plugin 구조로 전환
-  - [ ] plugin 디렉토리 구조 생성 (`clients/claude-code-plugin/`)
+- [x] Claude Code plugin 구조로 전환
+  - [x] plugin 디렉토리 구조 생성 (`clients/claude-code-plugin/`)
     - `.claude-plugin/plugin.json` — 메타데이터, 버전
     - `.claude-plugin/marketplace.json` — marketplace 카탈로그
     - `hooks/hooks.json` — 5개 이벤트 hook 등록
     - `scripts/idle_rpg_claude_hook.py` — 기존 hook 스크립트 이동
     - `skills/rpg-status/SKILL.md` — status skill
-  - [ ] hook command 경로를 `${CLAUDE_PLUGIN_ROOT}/scripts/...`로 변경
-  - [ ] 기존 `~/.claude/settings.json` hook 등록 방식 제거 가능하도록 설치 가이드 수정
+  - [x] hook command 경로를 `${CLAUDE_PLUGIN_ROOT}/scripts/...`로 변경
+  - [x] 기존 `~/.claude/settings.json` hook 등록 방식 제거 가능하도록 설치 가이드 수정
+  - [x] 웹 설치 가이드를 plugin 설치 방식으로 업데이트
   - [ ] `--plugin-dir`로 로컬 테스트
   - [ ] GitHub repo에 push 후 marketplace 설치 테스트
-  - [ ] 웹 설치 가이드를 plugin 설치 방식으로 업데이트
 - [ ] progression 재설계 검토
   - EXP, 스탯, 레벨이 실제로 무슨 의미를 가져야 하는지 재정의
   - 주간 보스 / 프로젝트 진행 / 업적 시스템과의 연결 구조 검토
@@ -86,12 +86,12 @@
   - active title
   - active weekly project progress 요약
 - [ ] Claude project skill / command 추가
-  - [ ] `/rpg-status` skill 구현
-    - API key 인증으로 캐릭터 정보를 내려주는 `/api/characters/status` 엔드포인트 추가
-    - `~/.claude-rpg.env` 설정 파일 규격 확정 (서버 URL, API key)
-    - skill이 API 호출 후 캐릭터 카드 형태로 콘솔에 출력
-    - 스탯은 MVP 유효 스탯(impl, stability, focus)만 표시
-    - 미확인 notification 요약도 함께 표시
+  - [x] `/rpg-status` skill 구현
+    - [x] API key 인증으로 캐릭터 정보를 내려주는 `/api/characters/status` 엔드포인트 추가
+    - [x] 설정 파일은 기존 `~/.config/idle-rpg/claude-code-hook.env` 재사용
+    - [x] `scripts/rpg_status.py` — API 호출 후 캐릭터 카드 콘솔 출력
+    - [x] 스탯은 MVP 유효 스탯(impl, stability, focus)만 표시
+    - [ ] 미확인 notification 요약도 함께 표시 (notification 시스템 구현 후)
   - [ ] `/rpg-project` skill 구현
     - 주간 프로젝트 진행률 조회
   - 웹 없이도 현재 상태와 진행률 조회 가능하게 구성
@@ -114,6 +114,12 @@
   - 정의 파일 + condition rule 파싱으로 전환
   - DB sync 스크립트 추가
 - [ ] 실제 Claude Code 환경에서 hook 설치 end-to-end 검증
+- [ ] 초기 프로덕션 배포 계획 수립
+  - [ ] 로컬 개발 마무리 후 AWS Lightsail 4GB / 80GB SSD (`$24/mo`) 기준으로 배포
+  - [ ] 단일 인스턴스에 `nginx` + `systemd` + FastAPI + PostgreSQL 구성
+  - [ ] 이벤트 보관 기간과 주기 삭제 정책 정의
+  - [ ] 도메인 구매 예산 반영 (`~$10/yr`)
+  - [ ] 이후 필요 시 EC2 등으로 마이그레이션 가능한 운영 기준 정리
 - [ ] Cursor provider 검토 및 연동 시작
 - [ ] provider adapter 구조 분리
 - [ ] 장비 모델/보상 루프 설계 구체화
@@ -130,6 +136,8 @@
 현재 저장소는 Claude turn summary, 최근 성장 로그, 주간 프로젝트 progress, 프로젝트 클리어 칭호, 콘솔 notification까지 한 번 연결된 상태다. MVP의 뼈대는 생겼고, 이제 가장 중요한 남은 일은 이 progression 구조의 의미를 더 단단하게 정의하는 것이다.
 
 그 다음 묶음은 제품 표현과 구조를 정리하는 것이다. 게임 이름 확정, 로그인/설치/캐릭터 상세 화면 분리, Claude-native status surface 추가, 전체 UI/브랜딩 정리가 그 뒤 순서다.
+
+배포 쪽은 로컬 개발을 마무리한 뒤 AWS Lightsail 4GB / 80GB SSD 플랜을 초기 프로덕션 후보로 잡는다. 운영 형태는 `nginx` + `systemd` + FastAPI + PostgreSQL 단일 인스턴스를 기본안으로 두고, 도메인 비용은 연간 약 `$10` 수준으로 별도 반영한다.
 
 ## Claude-native Review
 
@@ -825,6 +833,11 @@ MVP 운영 입력 예시:
 - progression 규칙이 단일 함수에 모여 있다
 - README가 개발 가이드 중심이고 제품 상태 설명은 약하다
 - 테스트가 API happy path 중심이다
+- `Character` 모델에 MVP에서 쓰지 않는 스탯 컬럼(`efficiency`, `versatility`, `endurance`)이 그대로 남아 있다
+  - `CharacterResponse` 스키마에도 함께 노출 중
+  - 삭제하려면 알embic 마이그레이션 + 스키마 정리 필요
+- `clients/claude-code-hook/`의 기존 hook 스크립트가 plugin으로 이동 후에도 그대로 남아 있다
+  - plugin 방식이 안정화되면 `clients/claude-code-hook/` 디렉토리 정리 필요
 
 ## Working Rules
 

@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 
-from server.api.deps import DbSession, get_current_user
+from server.api.deps import DbSession, get_current_installation, get_current_user
 from server.models.character import Character
 from server.models.event import ActivityEvent
 from server.models.installation import ProviderInstallation
@@ -10,7 +10,9 @@ from server.schemas.character import (
     CharacterActivityItemResponse,
     CharacterActivityListResponse,
     CharacterResponse,
+    CharacterStatusResponse,
 )
+from server.services.progression import required_exp_for_level
 
 router = APIRouter(prefix="/api/characters", tags=["characters"])
 
@@ -60,6 +62,31 @@ def _activity_summary(event: ActivityEvent) -> tuple[str, list[str]]:
     if not summary_parts:
         return ("Turn completed.", [])
     return (", ".join(summary_parts) + ".", list(dict.fromkeys(stat_hints)))
+
+
+@router.get("/status", response_model=CharacterStatusResponse)
+async def get_character_status(
+    db: DbSession,
+    installation: ProviderInstallation = Depends(get_current_installation),
+) -> CharacterStatusResponse:
+    character = (
+        await db.execute(select(Character).where(Character.user_id == installation.user_id))
+    ).scalar_one_or_none()
+    if character is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
+
+    exp_to_next = max(0, required_exp_for_level(character.level) - character.exp)
+    return CharacterStatusResponse(
+        name=character.name,
+        character_class=character.character_class,
+        level=character.level,
+        exp=character.exp,
+        exp_to_next_level=exp_to_next,
+        impl=character.impl,
+        stability=character.stability,
+        focus=character.focus,
+        title=character.title,
+    )
 
 
 @router.get("/me", response_model=CharacterResponse)

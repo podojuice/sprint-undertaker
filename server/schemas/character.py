@@ -34,3 +34,15 @@ class CharacterActivityItemResponse(BaseModel):
 
 class CharacterActivityListResponse(BaseModel):
     items: list[CharacterActivityItemResponse]
+
+
+class CharacterStatusResponse(BaseModel):
+    name: str
+    character_class: str
+    level: int
+    exp: int
+    exp_to_next_level: int
+    impl: int
+    stability: int
+    focus: int
+    title: str | None

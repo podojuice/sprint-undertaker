@@ -1,0 +1,19 @@
+{
+  "name": "idle-rpg-marketplace",
+  "owner": {
+    "name": "sprint-undertaker"
+  },
+  "metadata": {
+    "description": "Idle RPG Claude Code plugin",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "idle-rpg",
+      "source": "./",
+      "description": "Track your Claude Code activity and level up your Idle RPG character",
+      "version": "0.1.0",
+      "keywords": ["rpg", "gamification", "developer-tools"]
+    }
+  ]
+}

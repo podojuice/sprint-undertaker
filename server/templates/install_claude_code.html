@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}Install Claude Code Hook{% endblock %}
+{% block title %}Install Claude Code Plugin{% endblock %}
 
 {% block content %}
 <section class="page-intro">
-  <p class="eyebrow">Claude Code Hook</p>
-  <h1>Install the local collector, then add one hook snippet to Claude Code.</h1>
+  <p class="eyebrow">Claude Code Plugin</p>
+  <h1>Install the Idle RPG plugin for Claude Code.</h1>
   <p class="lede">
-    Idle RPG tracks Claude Code turns from <code>UserPromptSubmit</code> to <code>Stop</code>
-    and only sends privacy-safe summary metrics.
+    The plugin registers all hooks automatically and adds the <code>/idle-rpg:rpg-status</code> skill.
+    Only privacy-safe summary metrics are sent — no prompt text, no file paths.
   </p>
 </section>
 
 <section class="panel-grid two-col">
   <article class="panel">
     <h2>1. Create an installation</h2>
-    <p>Open <a href="/app">App</a>, log in, and create a Claude Code installation. That gives you a dedicated API key and install command.</p>
+    <p>Open <a href="/app">App</a>, log in, and create a Claude Code installation. That gives you a dedicated API key.</p>
   </article>
   <article class="panel">
-    <h2>2. Install the local hook collector</h2>
+    <h2>2. Run the installer</h2>
     <div class="command-block">
       <div class="command-header">
         <span>Installer</span>
@@ -26,11 +26,25 @@
       </div>
       <pre><code>{{ install_command }}</code></pre>
     </div>
-    <p>The installer writes the hook script and env file under <code>~/.config/idle-rpg</code>. It requires <code>python3</code> to already be available in your shell.</p>
+    <p>Writes the plugin files to <code>~/.config/idle-rpg/plugin/</code> and your API key to <code>~/.config/idle-rpg/claude-code-hook.env</code>. Requires <code>python3</code>.</p>
   </article>
   <article class="panel">
-    <h2>3. Add the hook settings</h2>
-    <p>Copy the snippet from the app into <code>~/.claude/settings.json</code> or project-local <code>.claude/settings.local.json</code>. Merge it into the existing JSON instead of replacing the whole file.</p>
+    <h2>3. Load the plugin</h2>
+    <p>Start Claude Code with the plugin directory, or add it permanently to your settings.</p>
+    <div class="command-block">
+      <div class="command-header">
+        <span>One-time (per session)</span>
+      </div>
+      <pre><code>claude --plugin-dir {{ plugin_dir_default }}</code></pre>
+    </div>
+    <div class="command-block" style="margin-top:0.75rem">
+      <div class="command-header">
+        <span>.claude/settings.local.json</span>
+        <button class="button button-ghost copy-trigger" type="button" data-copy="{{ plugin_dir_snippet }}">Copy</button>
+      </div>
+      <pre><code>{{ plugin_dir_snippet }}</code></pre>
+    </div>
+    <p>After loading, hooks run automatically and <code>/idle-rpg:rpg-status</code> becomes available.</p>
   </article>
   <article class="panel">
     <h2>4. Privacy model</h2>
@@ -44,51 +58,21 @@
 </section>
 
 <section class="panel wide-panel">
-  <h2>Current behavior</h2>
+  <h2>What the plugin provides</h2>
+  <ul class="flat-list">
+    <li><strong>Hooks</strong> — <code>SessionStart</code>, <code>UserPromptSubmit</code>, <code>PostToolUse</code>, <code>PostToolUseFailure</code>, <code>Stop</code> registered automatically.</li>
+    <li><strong>/idle-rpg:rpg-status</strong> — Shows your character level, stats, and active title in the console.</li>
+  </ul>
+</section>
+
+<section class="panel wide-panel">
+  <h2>Hook behavior</h2>
   <ul class="flat-list">
     <li><code>SessionStart</code> stores model information locally.</li>
     <li><code>UserPromptSubmit</code> starts a new turn.</li>
     <li><code>PostToolUse</code> and <code>PostToolUseFailure</code> update local summary counters.</li>
     <li><code>Stop</code> sends one <code>turn_completed</code> event to the server.</li>
   </ul>
-</section>
-
-<section class="panel wide-panel">
-  <h2>Claude Hook Settings Snippet</h2>
-  <div class="command-block">
-    <div class="command-header">
-      <span>settings.json snippet</span>
-      <button class="button button-ghost copy-trigger" type="button" data-copy="{{ hook_snippet }}">Copy</button>
-    </div>
-    <pre><code>{{ hook_snippet }}</code></pre>
-  </div>
-</section>
-
-<section class="panel wide-panel">
-  <h2>Settings File Guide</h2>
-  <div class="install-checklist">
-    <div>
-      <span class="step-badge">1</span>
-      <div>
-        <strong>Choose where to install hooks</strong>
-        <p>Use <code>~/.claude/settings.json</code> for global use across projects, or <code>.claude/settings.local.json</code> for one repository only.</p>
-      </div>
-    </div>
-    <div>
-      <span class="step-badge">2</span>
-      <div>
-        <strong>Open the current JSON file</strong>
-        <p>If the file already contains settings, keep them and add the <code>hooks</code> section instead of overwriting unrelated keys.</p>
-      </div>
-    </div>
-    <div>
-      <span class="step-badge">3</span>
-      <div>
-        <strong>Paste the snippet into the JSON file</strong>
-        <p>The snippet is shown above and is ready to copy. After saving the file, Claude Code will call the local collector automatically.</p>
-      </div>
-    </div>
-  </div>
 </section>
 {% endblock %}
 

@@ -11,66 +11,11 @@ templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 router = APIRouter(include_in_schema=False)
 
 
-def build_claude_hook_snippet() -> str:
-    return json.dumps(
-        {
-            "hooks": {
-                "SessionStart": [
-                    {
-                        "hooks": [
-                            {
-                                "type": "command",
-                                "command": 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" SessionStart',
-                            }
-                        ]
-                    }
-                ],
-                "UserPromptSubmit": [
-                    {
-                        "hooks": [
-                            {
-                                "type": "command",
-                                "command": 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" UserPromptSubmit',
-                            }
-                        ]
-                    }
-                ],
-                "PostToolUse": [
-                    {
-                        "matcher": "Edit|MultiEdit|Bash",
-                        "hooks": [
-                            {
-                                "type": "command",
-                                "command": 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" PostToolUse',
-                            }
-                        ],
-                    }
-                ],
-                "PostToolUseFailure": [
-                    {
-                        "matcher": "Edit|MultiEdit|Bash",
-                        "hooks": [
-                            {
-                                "type": "command",
-                                "command": 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" PostToolUseFailure',
-                            }
-                        ],
-                    }
-                ],
-                "Stop": [
-                    {
-                        "hooks": [
-                            {
-                                "type": "command",
-                                "command": 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" Stop',
-                            }
-                        ]
-                    }
-                ],
-            }
-        },
-        indent=2,
-    )
+PLUGIN_DIR_DEFAULT = "$HOME/.config/idle-rpg/plugin"
+
+
+def build_plugin_dir_snippet() -> str:
+    return json.dumps({"pluginDirs": [PLUGIN_DIR_DEFAULT]}, indent=2)
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -90,7 +35,8 @@ async def claude_code_install(request: Request) -> HTMLResponse:
         {
             "request": request,
             "install_command": f'curl -fsSL "{request.base_url}install/claude-code.sh" | bash',
-            "hook_snippet": build_claude_hook_snippet(),
+            "plugin_dir_snippet": build_plugin_dir_snippet(),
+            "plugin_dir_default": PLUGIN_DIR_DEFAULT,
         },
     )
 
