@@ -1,0 +1,5 @@
+IDLE_RPG_SERVER_URL=http://localhost:8000
+IDLE_RPG_API_KEY=rpg_sk_replace_me
+IDLE_RPG_INSTALLATION_NAME=local-codex
+CODEX_REAL_BIN=/absolute/path/to/codex
+

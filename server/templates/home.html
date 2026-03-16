@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Idle RPG{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Multi-provider Dev RPG</p>
+    <h1>Work with AI. Let the character grow on its own.</h1>
+    <p class="lede">
+      Idle RPG turns everyday AI-assisted development into character progression.
+      You keep coding. The game loop happens in the background.
+    </p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/app">Open App</a>
+      <a class="button button-secondary" href="/install/claude-code">Install for Claude Code</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="stat-line"><span>Level</span><strong>12</strong></div>
+    <div class="stat-line"><span>Title</span><strong>Reliable Operator</strong></div>
+    <div class="stat-grid">
+      <div><span>Impl</span><strong>48</strong></div>
+      <div><span>Focus</span><strong>29</strong></div>
+      <div><span>Stability</span><strong>34</strong></div>
+      <div><span>Endurance</span><strong>22</strong></div>
+    </div>
+    <p class="card-note">The dashboard is secondary. Progression is the product.</p>
+  </div>
+</section>
+
+<section class="panel-grid">
+  <article class="panel">
+    <h2>How it works</h2>
+    <p>Install a provider client once. Keep using your AI tool normally. Activity events become EXP, stats, and titles.</p>
+  </article>
+  <article class="panel">
+    <h2>Current support</h2>
+    <p>Backend MVP is live. Claude Code hook is the current install flow. Other providers come later.</p>
+  </article>
+  <article class="panel">
+    <h2>What you check</h2>
+    <p>Character level, titles, stat spread, and later raid contribution. Not raw telemetry dashboards.</p>
+  </article>
+</section>
+{% endblock %}

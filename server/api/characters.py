@@ -1,0 +1,111 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy import select
+
+from server.api.deps import DbSession, get_current_user
+from server.models.character import Character
+from server.models.event import ActivityEvent
+from server.models.installation import ProviderInstallation
+from server.models.user import User
+from server.schemas.character import (
+    CharacterActivityItemResponse,
+    CharacterActivityListResponse,
+    CharacterResponse,
+)
+
+router = APIRouter(prefix="/api/characters", tags=["characters"])
+
+
+def _activity_summary(event: ActivityEvent) -> tuple[str, list[str]]:
+    metrics = event.payload.get("metrics", {})
+    if event.canonical_event_type == "project_cleared":
+        project_title = event.payload.get("project_title", "Weekly project")
+        clear_title_name = event.payload.get("clear_title_name")
+        summary = f"Cleared weekly project {project_title}."
+        stat_hints = ["title"] if clear_title_name else []
+        return summary, stat_hints
+    if event.canonical_event_type != "turn_completed":
+        return ("Activity recorded.", [])
+
+    summary_parts: list[str] = []
+    stat_hints: list[str] = []
+
+    edit_count = int(metrics.get("edit_success_count", 0))
+    if edit_count > 0:
+        summary_parts.append(f"{edit_count} edit success")
+        stat_hints.append("impl")
+
+    validation_success_count = int(metrics.get("validation_success_count", 0))
+    validation_failure_count = int(metrics.get("validation_failure_count", 0))
+    if validation_success_count > 0:
+        summary_parts.append(f"{validation_success_count} validation success")
+        stat_hints.append("stability")
+    if validation_failure_count > 0:
+        summary_parts.append(f"{validation_failure_count} validation failure")
+
+    prompt_count = int(metrics.get("prompt_count", 0))
+    prompt_length_bucket = metrics.get("prompt_length_bucket")
+    if prompt_count > 0:
+        bucket_text = f" ({prompt_length_bucket})" if prompt_length_bucket else ""
+        summary_parts.append(f"{prompt_count} prompt{bucket_text}")
+        stat_hints.append("focus")
+
+    tool_failure_count = int(metrics.get("tool_failure_count", 0))
+    if tool_failure_count > 0:
+        summary_parts.append(f"{tool_failure_count} tool failure")
+
+    model_name = metrics.get("model_name")
+    if model_name:
+        summary_parts.append(f"model {model_name}")
+
+    if not summary_parts:
+        return ("Turn completed.", [])
+    return (", ".join(summary_parts) + ".", list(dict.fromkeys(stat_hints)))
+
+
+@router.get("/me", response_model=CharacterResponse)
+async def get_my_character(
+    db: DbSession,
+    current_user: User = Depends(get_current_user),
+) -> CharacterResponse:
+    character = (
+        await db.execute(
+            select(Character).where(Character.user_id == current_user.id)
+        )
+    ).scalar_one()
+    return CharacterResponse.model_validate(character)
+
+
+@router.get("/me/activity", response_model=CharacterActivityListResponse)
+async def get_my_activity(
+    db: DbSession,
+    current_user: User = Depends(get_current_user),
+) -> CharacterActivityListResponse:
+    rows = (
+        await db.execute(
+            select(ActivityEvent)
+            .join(
+                ProviderInstallation,
+                ProviderInstallation.id == ActivityEvent.installation_id,
+            )
+            .where(ProviderInstallation.user_id == current_user.id)
+            .order_by(ActivityEvent.occurred_at.desc(), ActivityEvent.id.desc())
+            .limit(10)
+        )
+    ).scalars().all()
+
+    items = []
+    for event in rows:
+        summary, stat_hints = _activity_summary(event)
+        items.append(
+            CharacterActivityItemResponse(
+                id=event.id,
+                event_type=event.canonical_event_type,
+                provider=event.provider.value,
+                occurred_at=event.occurred_at,
+                session_id=event.session_id,
+                summary=summary,
+                stat_hints=stat_hints,
+            )
+        )
+
+    return CharacterActivityListResponse(items=items)

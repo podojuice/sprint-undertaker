@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Idle RPG App{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">App</p>
+  <h1>Account, character, and install flow in one place.</h1>
+  <p class="lede">
+    Sign in, create a Claude Code installation, copy the installer command and hook
+    settings snippet, and check your character whenever you want.
+  </p>
+</section>
+
+<section class="app-grid">
+  <article class="panel auth-panel">
+    <div id="auth-forms">
+      <h2>Register</h2>
+      <form id="register-form" class="stack-form">
+        <input name="email" type="email" placeholder="email" required />
+        <input name="password" type="password" placeholder="password" required />
+        <input name="character_name" type="text" placeholder="character name" required />
+        <button class="button button-primary" type="submit">Create Account</button>
+      </form>
+
+      <h2>Login</h2>
+      <form id="login-form" class="stack-form">
+        <input name="email" type="email" placeholder="email" required />
+        <input name="password" type="password" placeholder="password" required />
+        <button class="button button-secondary" type="submit">Login</button>
+      </form>
+    </div>
+
+    <div id="account-panel" class="account-panel hidden">
+      <div class="panel-header">
+        <h2>Account</h2>
+        <button id="logout-button" class="button button-ghost" type="button">Logout</button>
+      </div>
+      <p class="account-copy">
+        You are logged in. Refresh your character or create an installation from this page.
+      </p>
+    </div>
+    <div id="auth-status" class="status-box">Not logged in.</div>
+  </article>
+
+  <article class="panel dashboard-panel">
+    <div class="panel-header">
+      <h2>Character</h2>
+      <button id="refresh-button" class="button button-ghost" type="button">Refresh</button>
+    </div>
+    <div id="character-card" class="character-card empty-state">
+      Login first to load your character.
+    </div>
+    <section id="title-panel" class="title-panel hidden">
+      <div class="panel-header">
+        <h2>Titles</h2>
+        <span id="title-summary" class="title-summary"></span>
+      </div>
+      <div id="title-list" class="empty-state">
+        Login first to load your title list.
+      </div>
+    </section>
+    <section id="activity-panel" class="title-panel hidden">
+      <div class="panel-header">
+        <h2>Recent Growth</h2>
+      </div>
+      <div id="activity-list" class="empty-state">
+        Login first to load your recent growth log.
+      </div>
+    </section>
+  </article>
+
+  <article class="panel install-panel">
+    <div class="panel-header">
+      <h2>Claude Code Installation</h2>
+      <button id="create-installation-button" class="button button-primary" type="button">
+        Create Claude Installation
+      </button>
+    </div>
+    <div id="installation-card" class="empty-state">
+      Login, then create an installation to get your Claude hook API key.
+    </div>
+  </article>
+</section>
+
+<section class="panel wide-panel">
+  <div class="panel-header">
+    <h2>Install Flow</h2>
+    <a class="button button-ghost" href="/install/claude-code">Open Full Guide</a>
+  </div>
+  <div class="install-checklist">
+    <div>
+      <span class="step-badge">1</span>
+      <div>
+        <strong>Log in or register</strong>
+        <p>The app stores your token locally so you can refresh character data and create installations.</p>
+      </div>
+    </div>
+    <div>
+      <span class="step-badge">2</span>
+      <div>
+        <strong>Create one Claude Code installation</strong>
+        <p>The server issues a dedicated API key for one local setup.</p>
+      </div>
+    </div>
+    <div>
+      <span class="step-badge">3</span>
+      <div>
+        <strong>Run the installer command once</strong>
+        <p>It writes the local Claude hook collector into <code>~/.config/idle-rpg</code> and creates the hook env file automatically.</p>
+      </div>
+    </div>
+    <div>
+      <span class="step-badge">4</span>
+      <div>
+        <strong>Add the hook settings snippet</strong>
+        <p>Paste the generated JSON snippet into <code>~/.claude/settings.json</code> or <code>.claude/settings.local.json</code>.</p>
+      </div>
+    </div>
+    <div>
+      <span class="step-badge">5</span>
+      <div>
+        <strong>Use Claude Code normally</strong>
+        <p>RPG tracking runs through Claude hooks without changing your usual prompt flow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/app.js" defer></script>
+{% endblock %}

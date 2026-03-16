@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Install Claude Code Hook{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Claude Code Hook</p>
+  <h1>Install the local collector, then add one hook snippet to Claude Code.</h1>
+  <p class="lede">
+    Idle RPG tracks Claude Code turns from <code>UserPromptSubmit</code> to <code>Stop</code>
+    and only sends privacy-safe summary metrics.
+  </p>
+</section>
+
+<section class="panel-grid two-col">
+  <article class="panel">
+    <h2>1. Create an installation</h2>
+    <p>Open <a href="/app">App</a>, log in, and create a Claude Code installation. That gives you a dedicated API key and install command.</p>
+  </article>
+  <article class="panel">
+    <h2>2. Install the local hook collector</h2>
+    <div class="command-block">
+      <div class="command-header">
+        <span>Installer</span>
+        <button class="button button-ghost copy-trigger" type="button" data-copy="{{ install_command }}">Copy</button>
+      </div>
+      <pre><code>{{ install_command }}</code></pre>
+    </div>
+    <p>The installer writes the hook script and env file under <code>~/.config/idle-rpg</code>. It requires <code>python3</code> to already be available in your shell.</p>
+  </article>
+  <article class="panel">
+    <h2>3. Add the hook settings</h2>
+    <p>Copy the snippet from the app into <code>~/.claude/settings.json</code> or project-local <code>.claude/settings.local.json</code>. Merge it into the existing JSON instead of replacing the whole file.</p>
+  </article>
+  <article class="panel">
+    <h2>4. Privacy model</h2>
+    <ul class="flat-list">
+      <li>No prompt text upload</li>
+      <li>No command text upload</li>
+      <li>No file path upload</li>
+      <li>Only turn summary counters and buckets are sent</li>
+    </ul>
+  </article>
+</section>
+
+<section class="panel wide-panel">
+  <h2>Current behavior</h2>
+  <ul class="flat-list">
+    <li><code>SessionStart</code> stores model information locally.</li>
+    <li><code>UserPromptSubmit</code> starts a new turn.</li>
+    <li><code>PostToolUse</code> and <code>PostToolUseFailure</code> update local summary counters.</li>
+    <li><code>Stop</code> sends one <code>turn_completed</code> event to the server.</li>
+  </ul>
+</section>
+
+<section class="panel wide-panel">
+  <h2>Claude Hook Settings Snippet</h2>
+  <div class="command-block">
+    <div class="command-header">
+      <span>settings.json snippet</span>
+      <button class="button button-ghost copy-trigger" type="button" data-copy="{{ hook_snippet }}">Copy</button>
+    </div>
+    <pre><code>{{ hook_snippet }}</code></pre>
+  </div>
+</section>
+
+<section class="panel wide-panel">
+  <h2>Settings File Guide</h2>
+  <div class="install-checklist">
+    <div>
+      <span class="step-badge">1</span>
+      <div>
+        <strong>Choose where to install hooks</strong>
+        <p>Use <code>~/.claude/settings.json</code> for global use across projects, or <code>.claude/settings.local.json</code> for one repository only.</p>
+      </div>
+    </div>
+    <div>
+      <span class="step-badge">2</span>
+      <div>
+        <strong>Open the current JSON file</strong>
+        <p>If the file already contains settings, keep them and add the <code>hooks</code> section instead of overwriting unrelated keys.</p>
+      </div>
+    </div>
+    <div>
+      <span class="step-badge">3</span>
+      <div>
+        <strong>Paste the snippet into the JSON file</strong>
+        <p>The snippet is shown above and is ready to copy. After saving the file, Claude Code will call the local collector automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll(".copy-trigger").forEach((button) => {
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy || "");
+        const previous = button.textContent;
+        button.textContent = "Copied";
+        window.setTimeout(() => {
+          button.textContent = previous;
+        }, 1200);
+      } catch (error) {
+        window.alert("Copy failed. Copy manually from the command box.");
+      }
+    });
+  });
+</script>
+{% endblock %}
