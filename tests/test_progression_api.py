@@ -199,6 +199,69 @@ async def test_hidden_titles_only_show_after_unlock(client: AsyncClient) -> None
 
 
 @pytest.mark.asyncio
+async def test_character_titles_endpoint_requires_api_key(client: AsyncClient) -> None:
+    response = await client.get("/api/characters/titles")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_character_titles_returns_titles_for_installation(client: AsyncClient) -> None:
+    access_token = await register_user(client)
+    api_key = await create_claude_installation(client, access_token)
+
+    response = await client.get(
+        "/api/characters/titles", headers={"X-Api-Key": api_key}
+    )
+    assert response.status_code == 200
+
+    titles = response.json()
+    assert len(titles) >= 1
+    assert titles[0]["theme_color"].startswith("#")
+    assert titles[0]["status_label"] in {"Unlocked", "Available", "Scheduled", "Ended", "Locked"}
+    assert "status_note" in titles[0]
+
+
+@pytest.mark.asyncio
+async def test_character_titles_shows_unlocked_after_progression(client: AsyncClient) -> None:
+    access_token = await register_user(client)
+    api_key = await create_claude_installation(client, access_token)
+
+    titles_before = (
+        await client.get("/api/characters/titles", headers={"X-Api-Key": api_key})
+    ).json()
+    assert all(t["status_label"] != "Unlocked" for t in titles_before)
+
+    for index in range(10):
+        await client.post(
+            "/api/events",
+            headers={"X-API-Key": api_key},
+            json={
+                "provider": "claude_code",
+                "event_type": "turn_completed",
+                "session_id": f"titles-{index}",
+                "occurred_at": "2026-03-15T10:00:00Z",
+                "metrics": {
+                    "prompt_count": 1,
+                    "prompt_length_bucket": "medium",
+                    "edit_success_count": 1,
+                    "validation_success_count": 1,
+                    "validation_failure_count": 0,
+                    "tool_failure_count": 0,
+                    "model_name": "claude-sonnet-4-6",
+                },
+                "metadata": {"client": "claude_code_hook"},
+            },
+        )
+
+    titles_after = (
+        await client.get("/api/characters/titles", headers={"X-Api-Key": api_key})
+    ).json()
+    unlocked = [t for t in titles_after if t["unlocked"]]
+    assert len(unlocked) >= 1
+    assert titles_after[0]["unlocked"] is True
+
+
+@pytest.mark.asyncio
 async def test_unlocked_titles_are_sorted_first(client: AsyncClient) -> None:
     access_token = await register_user(client)
     auth_header = {"Authorization": f"Bearer {access_token}"}

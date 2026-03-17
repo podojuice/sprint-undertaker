@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import and_, select
 
 from server.api.deps import DbSession, get_current_installation, get_current_user
 from server.models.character import Character
 from server.models.event import ActivityEvent
 from server.models.installation import ProviderInstallation
+from server.models.title import Title, TitleVisibility, UserTitle
 from server.models.user import User
 from server.schemas.character import (
     CharacterActivityItemResponse,
@@ -12,7 +13,9 @@ from server.schemas.character import (
     CharacterResponse,
     CharacterStatusResponse,
 )
+from server.schemas.title import TitleListItemResponse
 from server.services.progression import required_exp_for_level
+from server.services.titles import build_title_status, title_sort_key
 
 router = APIRouter(prefix="/api/characters", tags=["characters"])
 
@@ -87,6 +90,48 @@ async def get_character_status(
         focus=character.focus,
         title=character.title,
     )
+
+
+@router.get("/titles", response_model=list[TitleListItemResponse])
+async def get_character_titles(
+    db: DbSession,
+    installation: ProviderInstallation = Depends(get_current_installation),
+) -> list[TitleListItemResponse]:
+    rows = (
+        await db.execute(
+            select(Title, UserTitle.earned_at)
+            .outerjoin(
+                UserTitle,
+                and_(
+                    UserTitle.title_id == Title.id,
+                    UserTitle.user_id == installation.user_id,
+                ),
+            )
+            .order_by(Title.id)
+        )
+    ).all()
+
+    visible_rows = [
+        (title, earned_at)
+        for title, earned_at in rows
+        if title.visibility == TitleVisibility.PUBLIC or earned_at is not None
+    ]
+    visible_rows.sort(key=lambda row: title_sort_key(row[0], row[1]))
+
+    return [
+        TitleListItemResponse(
+            id=title.id,
+            name=title.name,
+            description=title.description,
+            theme_color=title.theme_color,
+            status_label=status_label,
+            status_note=status_note,
+            unlocked=earned_at is not None,
+            earned_at=earned_at,
+        )
+        for title, earned_at in visible_rows
+        for status_label, status_note in [build_title_status(title, earned_at)]
+    ]
 
 
 @router.get("/me", response_model=CharacterResponse)
