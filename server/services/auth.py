@@ -25,4 +25,4 @@ def create_access_token(user_id: int) -> str:
 
 
 def generate_api_key() -> str:
-    return f"rpg_sk_{token_urlsafe(24)}"
+    return f"su_sk_{token_urlsafe(24)}"

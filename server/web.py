@@ -11,7 +11,7 @@ templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 router = APIRouter(include_in_schema=False)
 
 
-PLUGIN_DIR_DEFAULT = "$HOME/.config/idle-rpg/plugin"
+PLUGIN_DIR_DEFAULT = "$HOME/.config/sprint-undertaker/plugin"
 
 
 def build_plugin_dir_snippet() -> str:

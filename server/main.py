@@ -24,7 +24,7 @@ async def lifespan(_: FastAPI):
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    app = FastAPI(title="Idle RPG API", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="Sprint Undertaker API", version="0.1.0", lifespan=lifespan)
     static_dir = Path(__file__).parent / "static"
 
     @app.get("/health")

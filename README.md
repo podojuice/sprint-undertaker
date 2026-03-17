@@ -79,12 +79,12 @@ RPG_DATABASE_URL=postgresql+asyncpg://rpg:rpg@localhost:5433/rpg_test UV_CACHE_D
 Claude Code용 자동 수집 hook는 아래 경로에 있습니다.
 
 - [clients/claude-code-hook/README.md](/Users/users/workspace/sprint-undertaker/clients/claude-code-hook/README.md)
-- [clients/claude-code-hook/idle_rpg_claude_hook.py](/Users/users/workspace/sprint-undertaker/clients/claude-code-hook/idle_rpg_claude_hook.py)
+- [clients/claude-code-hook/sprint_undertaker_hook.py](/Users/users/workspace/sprint-undertaker/clients/claude-code-hook/sprint_undertaker_hook.py)
 
 로컬 파일 설치 대신 서버 installer도 사용할 수 있습니다.
 
 ```bash
-curl -fsSL "http://localhost:8000/install/claude-code.sh?api_key=rpg_sk_...&installation_name=local-claude" | bash
+curl -fsSL "http://localhost:8000/install/claude-code.sh?api_key=su_sk_...&installation_name=local-claude" | bash
 ```
 
 설치 후에는 Claude settings에 hook snippet을 추가하면 되고, 이후 사용자는 Claude Code를 평소처럼 사용하면 됩니다.

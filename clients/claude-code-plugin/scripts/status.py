@@ -9,7 +9,7 @@ from urllib import request
 
 
 CONFIG_PATH = Path(
-    os.environ.get("IDLE_RPG_CLAUDE_CONFIG", "~/.config/idle-rpg/claude-code-hook.env")
+    os.environ.get("SPRINT_UNDERTAKER_CLAUDE_CONFIG", "~/.config/sprint-undertaker/claude-code-hook.env")
 ).expanduser()
 
 
@@ -32,11 +32,11 @@ def exp_bar(exp: int, exp_to_next: int, width: int = 20) -> str:
 
 def main() -> int:
     load_env_file()
-    server_url = os.environ.get("IDLE_RPG_SERVER_URL")
-    api_key = os.environ.get("IDLE_RPG_API_KEY")
+    server_url = os.environ.get("SPRINT_UNDERTAKER_SERVER_URL")
+    api_key = os.environ.get("SPRINT_UNDERTAKER_API_KEY")
 
     if not server_url or not api_key:
-        print(f"Error: IDLE_RPG_SERVER_URL and IDLE_RPG_API_KEY must be set in {CONFIG_PATH}")
+        print(f"Error: SPRINT_UNDERTAKER_SERVER_URL and SPRINT_UNDERTAKER_API_KEY must be set in {CONFIG_PATH}")
         return 1
 
     req = request.Request(

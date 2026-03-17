@@ -12,10 +12,10 @@ from urllib import request
 
 
 CONFIG_PATH = Path(
-    os.environ.get("IDLE_RPG_CLAUDE_CONFIG", "~/.config/idle-rpg/claude-code-hook.env")
+    os.environ.get("SPRINT_UNDERTAKER_CLAUDE_CONFIG", "~/.config/sprint-undertaker/claude-code-hook.env")
 ).expanduser()
 STATE_DIR = Path(
-    os.environ.get("IDLE_RPG_CLAUDE_STATE_DIR", "~/.config/idle-rpg/claude-code-hook-state")
+    os.environ.get("SPRINT_UNDERTAKER_CLAUDE_STATE_DIR", "~/.config/sprint-undertaker/claude-code-hook-state")
 ).expanduser()
 
 
@@ -153,8 +153,8 @@ def post_turn_summary(payload: dict) -> None:
         "tool_failure_count": turn_state["tool_failure_count"],
         "model_name": meta.get("model_name", "unknown"),
     }
-    server_url = os.environ.get("IDLE_RPG_SERVER_URL")
-    api_key = os.environ.get("IDLE_RPG_API_KEY")
+    server_url = os.environ.get("SPRINT_UNDERTAKER_SERVER_URL")
+    api_key = os.environ.get("SPRINT_UNDERTAKER_API_KEY")
     if not server_url or not api_key:
         return
     body = json.dumps(
@@ -166,7 +166,7 @@ def post_turn_summary(payload: dict) -> None:
             "metrics": metrics,
             "metadata": {
                 "client": "claude_code_hook",
-                "installation_name": os.environ.get("IDLE_RPG_INSTALLATION_NAME", "local-claude"),
+                "installation_name": os.environ.get("SPRINT_UNDERTAKER_INSTALLATION_NAME", "local-claude"),
             },
         }
     ).encode()

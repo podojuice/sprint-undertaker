@@ -5,9 +5,9 @@
 {% block content %}
 <section class="page-intro">
   <p class="eyebrow">Claude Code Plugin</p>
-  <h1>Install the Idle RPG plugin for Claude Code.</h1>
+  <h1>Install the Sprint Undertaker plugin for Claude Code.</h1>
   <p class="lede">
-    The plugin registers all hooks automatically and adds the <code>/idle-rpg:rpg-status</code> skill.
+    The plugin registers all hooks automatically and adds the <code>/sprint-undertaker:rpg-status</code> skill.
     Only privacy-safe summary metrics are sent — no prompt text, no file paths.
   </p>
 </section>
@@ -26,7 +26,7 @@
       </div>
       <pre><code>{{ install_command }}</code></pre>
     </div>
-    <p>Writes the plugin files to <code>~/.config/idle-rpg/plugin/</code> and your API key to <code>~/.config/idle-rpg/claude-code-hook.env</code>. Requires <code>python3</code>.</p>
+    <p>Writes the plugin files to <code>~/.config/sprint-undertaker/plugin/</code> and your API key to <code>~/.config/sprint-undertaker/claude-code-hook.env</code>. Requires <code>python3</code>.</p>
   </article>
   <article class="panel">
     <h2>3. Load the plugin</h2>
@@ -44,7 +44,7 @@
       </div>
       <pre><code>{{ plugin_dir_snippet }}</code></pre>
     </div>
-    <p>After loading, hooks run automatically and <code>/idle-rpg:rpg-status</code> becomes available.</p>
+    <p>After loading, hooks run automatically and <code>/sprint-undertaker:rpg-status</code> becomes available.</p>
   </article>
   <article class="panel">
     <h2>4. Privacy model</h2>
@@ -61,7 +61,7 @@
   <h2>What the plugin provides</h2>
   <ul class="flat-list">
     <li><strong>Hooks</strong> — <code>SessionStart</code>, <code>UserPromptSubmit</code>, <code>PostToolUse</code>, <code>PostToolUseFailure</code>, <code>Stop</code> registered automatically.</li>
-    <li><strong>/idle-rpg:rpg-status</strong> — Shows your character level, stats, and active title in the console.</li>
+    <li><strong>/sprint-undertaker:rpg-status</strong> — Shows your character level, stats, and active title in the console.</li>
   </ul>
 </section>
 

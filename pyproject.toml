@@ -1,7 +1,7 @@
 [project]
 name = "sprint-undertaker"
 version = "0.1.0"
-description = "Multi-provider idle RPG backend for developer activity"
+description = "Multi-provider developer RPG backend"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.115.6",

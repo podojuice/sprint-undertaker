@@ -1,4 +1,4 @@
-# Idle RPG Product Document
+# Sprint Undertaker Product Document
 
 ## One-line Summary
 

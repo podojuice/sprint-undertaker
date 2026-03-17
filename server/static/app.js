@@ -14,7 +14,7 @@ const authForms = document.querySelector("#auth-forms");
 const accountPanel = document.querySelector("#account-panel");
 const logoutButton = document.querySelector("#logout-button");
 
-const TOKEN_KEY = "idle_rpg_access_token";
+const TOKEN_KEY = "sprint_undertaker_access_token";
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({
@@ -110,7 +110,7 @@ function claudeSettingsSnippet() {
           hooks: [
             {
               type: "command",
-              command: 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" SessionStart',
+              command: 'python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py" SessionStart',
             },
           ],
         },
@@ -120,7 +120,7 @@ function claudeSettingsSnippet() {
           hooks: [
             {
               type: "command",
-              command: 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" UserPromptSubmit',
+              command: 'python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py" UserPromptSubmit',
             },
           ],
         },
@@ -131,7 +131,7 @@ function claudeSettingsSnippet() {
           hooks: [
             {
               type: "command",
-              command: 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" PostToolUse',
+              command: 'python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py" PostToolUse',
             },
           ],
         },
@@ -142,7 +142,7 @@ function claudeSettingsSnippet() {
           hooks: [
             {
               type: "command",
-              command: 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" PostToolUseFailure',
+              command: 'python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py" PostToolUseFailure',
             },
           ],
         },
@@ -152,7 +152,7 @@ function claudeSettingsSnippet() {
           hooks: [
             {
               type: "command",
-              command: 'python3 "$HOME/.config/idle-rpg/claude-code-hook.py" Stop',
+              command: 'python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py" Stop',
             },
           ],
         },
@@ -205,9 +205,9 @@ function renderInstallation(installation) {
       <div class="command-block compact">
         <div class="command-header">
           <span>Hook Script</span>
-          <button class="button button-ghost copy-trigger" type="button" data-copy='python3 "$HOME/.config/idle-rpg/claude-code-hook.py"'>Copy</button>
+          <button class="button button-ghost copy-trigger" type="button" data-copy='python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py"'>Copy</button>
         </div>
-        <pre><code>python3 "$HOME/.config/idle-rpg/claude-code-hook.py"</code></pre>
+        <pre><code>python3 "$HOME/.config/sprint-undertaker/claude-code-hook.py"</code></pre>
       </div>
     </div>
     <div class="command-block">
@@ -222,7 +222,7 @@ function renderInstallation(installation) {
         <span class="step-badge">1</span>
         <div>
           <strong>Run the installer once</strong>
-          <p>The script writes <code>~/.config/idle-rpg/claude-code-hook.py</code> and <code>~/.config/idle-rpg/claude-code-hook.env</code>. It requires <code>python3</code>.</p>
+          <p>The script writes <code>~/.config/sprint-undertaker/claude-code-hook.py</code> and <code>~/.config/sprint-undertaker/claude-code-hook.env</code>. It requires <code>python3</code>.</p>
         </div>
       </div>
       <div>

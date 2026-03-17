@@ -1,4 +1,4 @@
-# Idle RPG Work Document
+# Sprint Undertaker Work Document
 
 ## TODO
 
@@ -44,7 +44,7 @@
     - `.claude-plugin/plugin.json` — 메타데이터, 버전
     - `.claude-plugin/marketplace.json` — marketplace 카탈로그
     - `hooks/hooks.json` — 5개 이벤트 hook 등록
-    - `scripts/idle_rpg_claude_hook.py` — 기존 hook 스크립트 이동
+    - `scripts/sprint_undertaker_hook.py` — 기존 hook 스크립트 이동
     - `skills/rpg-status/SKILL.md` — status skill
   - [x] hook command 경로를 `${CLAUDE_PLUGIN_ROOT}/scripts/...`로 변경
   - [x] 기존 `~/.claude/settings.json` hook 등록 방식 제거 가능하도록 설치 가이드 수정
@@ -88,8 +88,8 @@
 - [ ] Claude project skill / command 추가
   - [x] `/rpg-status` skill 구현
     - [x] API key 인증으로 캐릭터 정보를 내려주는 `/api/characters/status` 엔드포인트 추가
-    - [x] 설정 파일은 기존 `~/.config/idle-rpg/claude-code-hook.env` 재사용
-    - [x] `scripts/rpg_status.py` — API 호출 후 캐릭터 카드 콘솔 출력
+    - [x] 설정 파일은 기존 `~/.config/sprint-undertaker/claude-code-hook.env` 재사용
+    - [x] `scripts/status.py` — API 호출 후 캐릭터 카드 콘솔 출력
     - [x] 스탯은 MVP 유효 스탯(impl, stability, focus)만 표시
     - [ ] 미확인 notification 요약도 함께 표시 (notification 시스템 구현 후)
   - [ ] `/rpg-project` skill 구현
@@ -131,7 +131,7 @@
 
 ## Current Read
 
-지금 저장소는 "Claude Code hooks를 첫 provider로 둔 Idle RPG MVP" 기준으로 재정렬된 상태다. 서버 기본 골격, 인증, installation 발급, turn summary 기반 이벤트 적재, 캐릭터 성장, 조직 기본 기능, 칭호 노출, Claude 설치 흐름까지는 형태가 잡혔다.
+지금 저장소는 "Claude Code hooks를 첫 provider로 둔 Sprint Undertaker MVP" 기준으로 재정렬된 상태다. 서버 기본 골격, 인증, installation 발급, turn summary 기반 이벤트 적재, 캐릭터 성장, 조직 기본 기능, 칭호 노출, Claude 설치 흐름까지는 형태가 잡혔다.
 
 현재 저장소는 Claude turn summary, 최근 성장 로그, 주간 프로젝트 progress, 프로젝트 클리어 칭호, 콘솔 notification까지 한 번 연결된 상태다. MVP의 뼈대는 생겼고, 이제 가장 중요한 남은 일은 이 progression 구조의 의미를 더 단단하게 정의하는 것이다.
 

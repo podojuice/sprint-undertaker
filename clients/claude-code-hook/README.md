@@ -1,6 +1,6 @@
 # Claude Code Hook
 
-`UserPromptSubmit -> Stop` turn 단위로 Claude Code 활동을 집계해서 Idle RPG 서버의 `/api/events`로 전송하는 hook collector입니다.
+`UserPromptSubmit -> Stop` turn 단위로 Claude Code 활동을 집계해서 Sprint Undertaker 서버의 `/api/events`로 전송하는 hook collector입니다.
 
 ## What it does
 
