@@ -39,11 +39,10 @@ def main() -> int:
         print(f"Error: SPRINT_UNDERTAKER_SERVER_URL and SPRINT_UNDERTAKER_API_KEY must be set in {CONFIG_PATH}")
         return 1
 
-    req = request.Request(
-        f"{server_url.rstrip('/')}/api/characters/status",
-        headers={"X-Api-Key": api_key},
-        method="GET",
-    )
+    base_url = server_url.rstrip("/")
+    headers = {"X-Api-Key": api_key}
+
+    req = request.Request(f"{base_url}/api/characters/status", headers=headers, method="GET")
     try:
         with request.urlopen(req, timeout=5) as response:
             data = json.loads(response.read().decode())
@@ -71,6 +70,28 @@ def main() -> int:
     print(f"  impl      {impl:>5}")
     print(f"  stability {stability:>5}")
     print(f"  focus     {focus:>5}")
+
+    try:
+        notif_req = request.Request(
+            f"{base_url}/api/notifications/me", headers=headers, method="GET"
+        )
+        with request.urlopen(notif_req, timeout=5) as response:
+            notif_data = json.loads(response.read().decode())
+
+        items = notif_data.get("items", [])
+        if items:
+            print()
+            print(f"  -- {len(items)} unread --")
+            for item in items:
+                print(f"  {item['message']}")
+
+            read_req = request.Request(
+                f"{base_url}/api/notifications/me/read", headers=headers, method="POST"
+            )
+            request.urlopen(read_req, timeout=5).close()
+    except Exception:
+        pass
+
     print()
     return 0
 

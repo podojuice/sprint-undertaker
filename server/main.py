@@ -10,6 +10,7 @@ from server.api.auth import router as auth_router
 from server.api.characters import router as characters_router
 from server.api.events import router as events_router
 from server.api.installations import router as installations_router
+from server.api.notifications import router as notifications_router
 from server.api.organizations import router as organizations_router
 from server.api.titles import router as titles_router
 from server.installers import router as installers_router
@@ -42,6 +43,7 @@ def create_app() -> FastAPI:
     app.include_router(titles_router)
     app.include_router(installations_router)
     app.include_router(events_router)
+    app.include_router(notifications_router)
     app.include_router(organizations_router)
 
     return app

@@ -49,7 +49,7 @@
   - [x] hook command 경로를 `${CLAUDE_PLUGIN_ROOT}/scripts/...`로 변경
   - [x] 기존 `~/.claude/settings.json` hook 등록 방식 제거 가능하도록 설치 가이드 수정
   - [x] 웹 설치 가이드를 plugin 설치 방식으로 업데이트
-  - [ ] `--plugin-dir`로 로컬 테스트
+  - [x] `--plugin-dir`로 로컬 테스트
   - [ ] GitHub repo에 push 후 marketplace 설치 테스트
 - [ ] progression 재설계 검토
   - EXP, 스탯, 레벨이 실제로 무슨 의미를 가져야 하는지 재정의
@@ -57,7 +57,7 @@
   - 현재 turn summary 메트릭만으로 장기 게임 루프를 지탱할 수 있는지 한계 분석
   - 어떤 질문부터 결정해야 설계 구멍이 적은지 정리
   - 무엇을 먼저 확정하고 다음 단계로 넘어갈지 decision checklist 작성
-- [ ] 게임 이름 확정
+- [x] 게임 이름 확정
   - 제품/브랜드 이름 후보 정리
   - 최종 이름 결정 후 문서와 UI 카피 반영
 - [ ] 앱 UX 개선

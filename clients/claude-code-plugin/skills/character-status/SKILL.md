@@ -1,5 +1,5 @@
 ---
-name: rpg-status
+name: character-status
 description: Show your Sprint Undertaker character status — level, stats, and active title
 ---
 

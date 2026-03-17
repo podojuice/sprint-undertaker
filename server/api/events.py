@@ -7,6 +7,7 @@ from server.api.deps import DbSession, get_current_installation
 from server.models.character import Character
 from server.models.event import ActivityEvent
 from server.models.installation import ProviderInstallation
+from server.models.notification import Notification
 from server.models.user import User
 from server.schemas.event import EventIngestRequest, EventIngestResponse
 from server.services.progression import apply_turn_summary
@@ -50,6 +51,14 @@ async def ingest_event(
     project_update = await apply_weekly_project_progress(db, installation, user, payload.metrics)
     awarded = await award_titles(db, user, character)
     notifications = progression.notifications + project_update.notifications + awarded.notifications
+
+    notification_rows = (
+        [(msg, "level_up") for msg in progression.notifications]
+        + [(msg, "project_clear") for msg in project_update.notifications]
+        + [(msg, "title_unlock") for msg in awarded.notifications]
+    )
+    for message, category in notification_rows:
+        db.add(Notification(user_id=user.id, message=message, category=category))
 
     await db.commit()
 
