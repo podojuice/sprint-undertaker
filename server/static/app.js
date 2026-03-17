@@ -266,7 +266,7 @@ function renderTitles(titles) {
 
   const unlockedCount = titles.filter((title) => title.unlocked).length;
   if (titleSummary) {
-    titleSummary.textContent = `${unlockedCount} unlocked / ${titles.length} visible`;
+    titleSummary.textContent = `${unlockedCount} / ${titles.length}`;
   }
 
   titleList.className = "title-list";
@@ -282,12 +282,20 @@ function renderTitles(titles) {
         </div>
         <div class="title-meta">
           <span>${escapeHtml(title.status_note)}</span>
-          <span>${title.unlocked && title.earned_at ? `Earned: ${new Date(title.earned_at).toLocaleDateString()}` : "Not earned yet."}</span>
         </div>
       </article>
     `)
     .join("");
 }
+
+const EVENT_TYPE_LABELS = {
+  turn_completed: "Turn",
+  project_cleared: "Project Clear",
+};
+
+const PROVIDER_LABELS = {
+  claude_code: "Claude Code",
+};
 
 function renderActivity(items) {
   if (!activityList) return;
@@ -303,24 +311,31 @@ function renderActivity(items) {
     return;
   }
 
-  activityList.className = "title-list";
+  activityList.className = "activity-list";
   activityList.innerHTML = items
-    .map((item) => `
-      <article class="title-card is-unlocked">
-        <div class="title-card-header">
-          <div>
-            <h3>${escapeHtml(item.event_type)}</h3>
-            <p>${escapeHtml(item.summary)}</p>
+    .map((item) => {
+      const label = EVENT_TYPE_LABELS[item.event_type] || item.event_type;
+      const provider = PROVIDER_LABELS[item.provider] || item.provider;
+      const date = new Date(item.occurred_at).toLocaleString(undefined, {
+        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+      });
+      const stats = item.stat_hints.length > 0
+        ? item.stat_hints.map((hint) => `<code>${escapeHtml(hint)}</code>`).join(" · ")
+        : null;
+      return `
+        <article class="activity-card">
+          <div class="activity-card-header">
+            <h3>${escapeHtml(label)}</h3>
+            <span class="activity-date">${date}</span>
           </div>
-          <span class="title-state">${new Date(item.occurred_at).toLocaleString()}</span>
-        </div>
-        <div class="title-meta">
-          <span>Provider: ${escapeHtml(item.provider)}</span>
-          <span>Stats: ${item.stat_hints.length > 0 ? item.stat_hints.map((hint) => `<code>${escapeHtml(hint)}</code>`).join(", ") : "none"}</span>
-          <span>${item.session_id ? `Session: ${escapeHtml(item.session_id)}` : "No session id"}</span>
-        </div>
-      </article>
-    `)
+          <p>${escapeHtml(item.summary)}</p>
+          <div class="activity-card-meta">
+            <span>${provider}</span>
+            ${stats ? `<span>${stats}</span>` : ""}
+          </div>
+        </article>
+      `;
+    })
     .join("");
 }
 

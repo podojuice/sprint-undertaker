@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Character — Sprint Undertaker{% endblock %}
+
+{% block content %}
+<div class="character-page-grid">
+  <section class="character-main">
+    <div id="character-card" class="panel character-card-panel empty-state">
+      Loading character…
+    </div>
+
+    <section id="title-panel" class="panel title-panel-card hidden">
+      <div class="panel-header">
+        <h2>Titles</h2>
+        <span id="title-summary" class="title-summary"></span>
+      </div>
+      <div id="title-list" class="title-list"></div>
+    </section>
+  </section>
+
+  <aside class="character-sidebar">
+    <div class="panel character-image-panel">
+      <div class="character-image-placeholder">
+        <span>Art</span>
+        <p>coming soon</p>
+      </div>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/common.js"></script>
+<script src="/static/character.js" defer></script>
+{% endblock %}

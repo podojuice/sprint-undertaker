@@ -118,6 +118,14 @@ pre {
   align-items: center;
 }
 
+.panel-header {
+  justify-content: space-between;
+}
+
+.panel-header h2 {
+  margin: 0;
+}
+
 .hero-actions {
   margin-top: 26px;
 }
@@ -371,6 +379,57 @@ pre {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.activity-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.activity-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.activity-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.activity-card h3 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.activity-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.activity-card-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.activity-date {
+  color: var(--muted);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
 .title-card {
   padding: 16px;
   border: 1px solid color-mix(in srgb, var(--title-accent, var(--line)) 35%, white);
@@ -451,6 +510,157 @@ pre {
   margin-top: 20px;
 }
 
+/* Login page */
+.auth-page-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 760px;
+}
+
+.auth-status-bar {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.94rem;
+  min-height: 1.4em;
+}
+
+/* Character page */
+.character-page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+.character-main {
+  display: grid;
+  gap: 20px;
+}
+
+.character-card-panel {
+  padding: 28px;
+}
+
+.char-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.char-name {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+}
+
+.char-exp {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.title-panel-card {
+  padding: 24px;
+}
+
+.character-sidebar {
+  display: grid;
+  gap: 20px;
+}
+
+.character-image-panel {
+  padding: 0;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.character-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  opacity: 0.5;
+}
+
+.character-image-placeholder span {
+  font-size: 2.5rem;
+}
+
+/* Setup page */
+.wide-checklist {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.setup-step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.setup-step:first-child {
+  border-top: 0;
+}
+
+.setup-step-body {
+  display: grid;
+  gap: 10px;
+}
+
+.setup-step-body > strong {
+  font-size: 1.05rem;
+}
+
+.setup-step-body > p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.setup-install-area {
+  margin-top: 4px;
+}
+
+.setup-auth-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .auth-page-grid,
+  .character-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .character-sidebar {
+    order: -1;
+  }
+
+  .character-image-panel {
+    aspect-ratio: 3 / 1;
+  }
+}
+
 @media (max-width: 900px) {
   .hero,
   .app-grid,
@@ -473,5 +683,9 @@ pre {
   .install-summary,
   .title-list {
     grid-template-columns: 1fr;
+  }
+
+  .install-panel {
+    grid-column: auto;
   }
 }

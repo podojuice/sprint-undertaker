@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Setup — Sprint Undertaker{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Claude Code Plugin</p>
+  <h1>Set up Sprint Undertaker in four steps.</h1>
+  <p class="lede">
+    Only privacy-safe summary metrics are sent — no prompt text, no file paths.
+  </p>
+</section>
+
+<div class="install-checklist wide-checklist">
+
+  <div class="setup-step">
+    <span class="step-badge">1</span>
+    <div class="setup-step-body">
+      <strong>Create an installation</strong>
+      <p>Log in and generate a dedicated API key for this machine.</p>
+
+      <div id="installation-area" class="setup-install-area">
+        <div id="not-logged-in-note" class="setup-auth-note">
+          <a class="button button-primary" href="/login">Log in to continue</a>
+        </div>
+        <div id="installation-card" class="hidden"></div>
+        <div id="create-wrap" class="hidden">
+          <button id="create-installation-button" class="button button-primary" type="button">
+            Create Installation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="setup-step">
+    <span class="step-badge">2</span>
+    <div class="setup-step-body">
+      <strong>Run the installer once</strong>
+      <p>Copy the installer command from step 1 and run it in your terminal. It writes the plugin files to <code>~/.config/sprint-undertaker/</code>. Requires <code>python3</code>.</p>
+    </div>
+  </div>
+
+  <div class="setup-step">
+    <span class="step-badge">3</span>
+    <div class="setup-step-body">
+      <strong>Load the plugin</strong>
+      <p>Add the plugin directory to your Claude Code settings so hooks run automatically.</p>
+      <div class="command-block">
+        <div class="command-header">
+          <span>.claude/settings.local.json</span>
+          <button class="button button-ghost copy-trigger" type="button" data-copy="{{ plugin_dir_snippet }}">Copy</button>
+        </div>
+        <pre><code>{{ plugin_dir_snippet }}</code></pre>
+      </div>
+      <p>Or start Claude Code with <code>claude --plugin-dir {{ plugin_dir_default }}</code> for a one-off session.</p>
+    </div>
+  </div>
+
+  <div class="setup-step">
+    <span class="step-badge">4</span>
+    <div class="setup-step-body">
+      <strong>Use Claude Code normally</strong>
+      <p>Hooks run in the background. <code>/sprint-undertaker:character-status</code> shows your character level, stats, and titles in the console.</p>
+      <ul class="flat-list">
+        <li>No prompt text uploaded</li>
+        <li>No file paths uploaded</li>
+        <li>Only turn summary counters and buckets are sent</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/common.js"></script>
+<script src="/static/setup.js" defer></script>
+{% endblock %}

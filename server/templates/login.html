@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Login — Sprint Undertaker{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Account</p>
+  <h1>Sign in or create an account.</h1>
+</section>
+
+<div class="auth-page-grid">
+  <article class="panel auth-form-panel">
+    <h2>Register</h2>
+    <form id="register-form" class="stack-form">
+      <input name="email" type="email" placeholder="email" required />
+      <input name="password" type="password" placeholder="password" required />
+      <input name="character_name" type="text" placeholder="character name" required />
+      <button class="button button-primary" type="submit">Create Account</button>
+    </form>
+  </article>
+
+  <article class="panel auth-form-panel">
+    <h2>Login</h2>
+    <form id="login-form" class="stack-form">
+      <input name="email" type="email" placeholder="email" required />
+      <input name="password" type="password" placeholder="password" required />
+      <button class="button button-secondary" type="submit">Login</button>
+    </form>
+  </article>
+</div>
+
+<div id="auth-status" class="auth-status-bar"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/common.js"></script>
+<script src="/static/login.js" defer></script>
+{% endblock %}

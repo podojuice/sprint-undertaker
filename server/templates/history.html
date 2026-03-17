@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}History — Sprint Undertaker{% endblock %}
+
+{% block content %}
+<section class="page-intro">
+  <p class="eyebrow">Growth Log</p>
+  <h1>Recent activity.</h1>
+</section>
+
+<div id="activity-list" class="empty-state">Loading…</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/common.js"></script>
+<script src="/static/history.js" defer></script>
+{% endblock %}
