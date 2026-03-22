@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "sprint-undertaker-marketplace",
+  "description": "Sprint Undertaker Claude Code plugin",
+  "owner": {
+    "name": "podojuice"
+  },
+  "plugins": [
+    {
+      "name": "sprint-undertaker",
+      "description": "Track your Claude Code activity and level up your Sprint Undertaker character",
+      "keywords": ["rpg", "gamification", "developer-tools"],
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/podojuice/sprint-undertaker",
+        "path": "clients/claude-code-plugin"
+      }
+    }
+  ]
+}
