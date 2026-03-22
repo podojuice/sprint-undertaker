@@ -74,17 +74,25 @@
     - 멤버 레벨
     - 총 활동량
     - 최근 성장 요약
-  - [ ] installation 관리 UX 보강
+  - [ ] installation 관리 UX 보강 (optional, MVP 이후)
     - rotate key
     - 다중 installation 표시
   - [ ] UI/브랜딩 다듬기
     - 화면 분리 이후 정보 구조 재정리
     - 타이포/컬러/레이아웃 정리
     - 전체 제품 톤앤매너 정리
-- [ ] Claude status line 추가
-  - 현재 레벨
-  - active title
-  - active weekly project progress 요약
+- [x] Claude status line 추가
+  - 현재 레벨, active title, weekly project 진행률 표시
+  - **동작 방식 (캐시 기반, 네트워크 레이턴시 없음)**
+    1. hook이 5개 이벤트 batch flush 성공 → 백그라운드 subprocess에서
+       `/api/characters/status` + `/api/characters/weekly-project` 호출
+    2. 결과를 `~/.config/sprint-undertaker/claude-code-hook-state/status-cache.json` 에 저장
+    3. Claude Code가 매 assistant 메시지 완료 후 `statusline.py` (또는 shell script) 실행
+    4. 스크립트가 캐시 파일만 읽어서 출력 → 네트워크 호출 없음
+  - **설정**: `settings.local.json`에 `statusLine` 항목 추가 (setup 페이지 Optional 단계에서 snippet 제공)
+  - **기존 status line과 통합**: `~/.claude/statusline-command.sh` 끝에 캐시 읽는 블록 추가
+  - **표시 예시**: `sprint-undertaker  git:(main)  [claude-sonnet-4-6 12%]   ⚔ Lv.7  Reliable Climber   ·   ████░░░░  4/10`
+  - 캐시 없으면 Sprint Undertaker 부분 미표시 (첫 flush 전까지)
 - [ ] Claude project skill / command 추가
   - [x] `/rpg-status` skill 구현
     - [x] API key 인증으로 캐릭터 정보를 내려주는 `/api/characters/status` 엔드포인트 추가
