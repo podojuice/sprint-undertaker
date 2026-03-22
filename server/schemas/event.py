@@ -34,3 +34,18 @@ class EventIngestResponse(BaseModel):
     level_up: bool
     new_titles: list[str]
     notifications: list[str]
+    upgrade_notice: str | None = None
+
+
+class EventBatchRequest(BaseModel):
+    events: list[EventIngestRequest] = Field(min_length=1, max_length=50)
+
+
+class EventBatchResponse(BaseModel):
+    processed: int
+    stat_changes: dict[str, int]
+    exp_gained: int
+    level_up: bool
+    new_titles: list[str]
+    notifications: list[str]
+    upgrade_notice: str | None = None

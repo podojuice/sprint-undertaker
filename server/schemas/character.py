@@ -46,3 +46,4 @@ class CharacterStatusResponse(BaseModel):
     stability: int
     focus: int
     title: str | None
+    upgrade_notice: str | None = None

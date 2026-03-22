@@ -8,7 +8,7 @@ from server.services.projects import seed_weekly_projects
 from server.services.titles import seed_titles
 
 settings = get_settings()
-engine = create_async_engine(settings.database_url, echo=False)
+engine = create_async_engine(settings.database_url, echo=False, pool_pre_ping=True)
 SessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
@@ -18,7 +18,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 
 def create_session_factory(database_url: str) -> tuple:
-    db_engine = create_async_engine(database_url, echo=False)
+    db_engine = create_async_engine(database_url, echo=False, pool_pre_ping=True)
     session_factory = async_sessionmaker(
         db_engine,
         class_=AsyncSession,

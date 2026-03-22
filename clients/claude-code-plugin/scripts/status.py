@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 from urllib import request
+
+sys.path.insert(0, str(Path(__file__).parent))
+from _su_lib import PLUGIN_VERSION
 
 
 CONFIG_PATH = Path(
@@ -40,7 +44,7 @@ def main() -> int:
         return 1
 
     base_url = server_url.rstrip("/")
-    headers = {"X-Api-Key": api_key}
+    headers = {"X-Api-Key": api_key, "X-Plugin-Version": PLUGIN_VERSION}
 
     req = request.Request(f"{base_url}/api/characters/status", headers=headers, method="GET")
     try:
@@ -56,6 +60,7 @@ def main() -> int:
     exp = data["exp"]
     exp_to_next = data["exp_to_next_level"]
     title = data.get("title") or "(no title)"
+    upgrade_notice = data.get("upgrade_notice")
     impl = data["impl"]
     stability = data["stability"]
     focus = data["focus"]
@@ -91,6 +96,9 @@ def main() -> int:
             request.urlopen(read_req, timeout=5).close()
     except Exception:
         pass
+
+    if upgrade_notice:
+        print(f"  !! {upgrade_notice}")
 
     print()
     return 0

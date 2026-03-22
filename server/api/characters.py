@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy import and_, select
 
-from server.api.deps import DbSession, get_current_installation, get_current_user
+from server.api.deps import DbSession, check_plugin_upgrade, get_current_installation, get_current_user
 from server.models.character import Character
 from server.models.event import ActivityEvent
 from server.models.installation import ProviderInstallation
@@ -71,6 +73,7 @@ def _activity_summary(event: ActivityEvent) -> tuple[str, list[str]]:
 async def get_character_status(
     db: DbSession,
     installation: ProviderInstallation = Depends(get_current_installation),
+    x_plugin_version: Annotated[str | None, Header()] = None,
 ) -> CharacterStatusResponse:
     character = (
         await db.execute(select(Character).where(Character.user_id == installation.user_id))
@@ -89,6 +92,7 @@ async def get_character_status(
         stability=character.stability,
         focus=character.focus,
         title=character.title,
+        upgrade_notice=check_plugin_upgrade(x_plugin_version),
     )
 
 

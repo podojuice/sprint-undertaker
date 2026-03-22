@@ -50,13 +50,14 @@
   - [x] 기존 `~/.claude/settings.json` hook 등록 방식 제거 가능하도록 설치 가이드 수정
   - [x] 웹 설치 가이드를 plugin 설치 방식으로 업데이트
   - [x] `--plugin-dir`로 로컬 테스트
-  - [ ] GitHub repo에 push 후 marketplace 설치 테스트
-- [ ] progression 재설계 검토
-  - EXP, 스탯, 레벨이 실제로 무슨 의미를 가져야 하는지 재정의
-  - 주간 보스 / 프로젝트 진행 / 업적 시스템과의 연결 구조 검토
-  - 현재 turn summary 메트릭만으로 장기 게임 루프를 지탱할 수 있는지 한계 분석
-  - 어떤 질문부터 결정해야 설계 구멍이 적은지 정리
-  - 무엇을 먼저 확정하고 다음 단계로 넘어갈지 decision checklist 작성
+  - [x] register/login skill 추가 (`scripts/register.py`, `scripts/login.py`)
+  - [x] register skill 이메일 인증 2단계 플로우 구현 (코드 발송 → `--code` 인자로 인증)
+  - [x] register/login skill에서 서버 URL 입력 제거 (스크립트 기본값 사용)
+  - [x] EmailCode enum `values_callable` 버그 수정 (대소문자 불일치)
+  - [x] alembic `env.py`에 dotenv 연동 (`.env`의 `RPG_DATABASE_URL` 자동 로드)
+  - [x] Supabase 원격 DB 연결 및 이메일 인증 end-to-end 검증
+- [x] progression 재설계 검토
+  - 현재 설계(impl×4 + stability×3 + focus×2, 레벨 공식 100×level^1.5) 그대로 유지 결정
 - [x] 게임 이름 확정
   - 제품/브랜드 이름 후보 정리
   - 최종 이름 결정 후 문서와 UI 카피 반영
@@ -95,14 +96,12 @@
   - [ ] `/rpg-project` skill 구현
     - 주간 프로젝트 진행률 조회
   - 웹 없이도 현재 상태와 진행률 조회 가능하게 구성
-- [ ] Notification 시스템 구현
-  - [ ] `notifications` 테이블 설계 및 마이그레이션
+- [x] Notification 시스템 구현
+  - [x] `notifications` 테이블 설계 및 마이그레이션
     - id, user_id, message, category (level_up, title_unlock, project_clear 등), created_at
-  - [ ] 이벤트 처리 시 notification 레코드 생성 (progression, title, project clear)
-  - [ ] 유저별 마지막 확인 시점 관리 (last_read_notification_id 또는 last_read_at)
-  - [ ] `/api/notifications/me` 조회 API
-    - 마지막 확인 이후 notification만 반환
-    - 확인 처리 (read mark) API
+  - [x] 이벤트 처리 시 notification 레코드 생성 (progression, title, project clear)
+  - [x] `/api/notifications/me` 조회 API (unread만 반환)
+  - [x] 확인 처리 (read mark) API
   - [ ] `/rpg-status` skill에서 미확인 notification 표시
   - [ ] hook에서 desktop notification 보내는 것은 MVP에서 제외
 - [x] 칭호 작업 마무리
@@ -120,6 +119,9 @@
   - [ ] 이벤트 보관 기간과 주기 삭제 정책 정의
   - [ ] 도메인 구매 예산 반영 (`~$10/yr`)
   - [ ] 이후 필요 시 EC2 등으로 마이그레이션 가능한 운영 기준 정리
+- [ ] GitHub repo push 후 marketplace git-subdir 방식으로 전환
+  - `clients/claude-code-plugin/`을 `git-subdir` source로 마켓플레이스에 등록
+  - 마켓플레이스 repo 별도 생성 필요
 - [ ] Cursor provider 검토 및 연동 시작
 - [ ] provider adapter 구조 분리
 - [ ] 장비 모델/보상 루프 설계 구체화
@@ -131,11 +133,11 @@
 
 ## Current Read
 
-지금 저장소는 "Claude Code hooks를 첫 provider로 둔 Sprint Undertaker MVP" 기준으로 재정렬된 상태다. 서버 기본 골격, 인증, installation 발급, turn summary 기반 이벤트 적재, 캐릭터 성장, 조직 기본 기능, 칭호 노출, Claude 설치 흐름까지는 형태가 잡혔다.
+Claude Code plugin 구조로 전환이 완료됐고, Supabase 원격 DB 연결 및 이메일 인증 기반 회원가입 플로우까지 end-to-end 검증된 상태다. register/login skill이 추가됐고, 로컬 마켓플레이스(`directory` source)로 플러그인 설치 및 캐릭터 상태 조회까지 동작 확인됨.
 
-현재 저장소는 Claude turn summary, 최근 성장 로그, 주간 프로젝트 progress, 프로젝트 클리어 칭호, 콘솔 notification까지 한 번 연결된 상태다. MVP의 뼈대는 생겼고, 이제 가장 중요한 남은 일은 이 progression 구조의 의미를 더 단단하게 정의하는 것이다.
+남은 플러그인 작업은 GitHub repo에 push한 뒤 마켓플레이스를 `git-subdir` 방식으로 전환하는 것이다. 서버와 클라이언트가 한 repo에 있어도 마켓플레이스에서 서브디렉토리만 참조할 수 있으므로 별도 분리 없이 배포 가능하다.
 
-그 다음 묶음은 제품 표현과 구조를 정리하는 것이다. 게임 이름 확정, 로그인/설치/캐릭터 상세 화면 분리, Claude-native status surface 추가, 전체 UI/브랜딩 정리가 그 뒤 순서다.
+그 다음 묶음은 progression 구조 의미 확정, 앱 UX 개선, Claude status line 추가, notification 시스템 구현이다.
 
 배포 쪽은 로컬 개발을 마무리한 뒤 AWS Lightsail 4GB / 80GB SSD 플랜을 초기 프로덕션 후보로 잡는다. 운영 형태는 `nginx` + `systemd` + FastAPI + PostgreSQL 단일 인스턴스를 기본안으로 두고, 도메인 비용은 연간 약 `$10` 수준으로 별도 반영한다.
 

@@ -58,3 +58,10 @@ async def get_current_installation(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
     return installation
 
+
+def check_plugin_upgrade(client_version: str | None) -> str | None:
+    latest = get_settings().plugin_version_latest
+    if client_version and client_version != latest:
+        return f"Plugin update available: {latest} (yours: {client_version})"
+    return None
+
