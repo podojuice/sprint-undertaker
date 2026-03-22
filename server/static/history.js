@@ -2,47 +2,38 @@ if (!requireAuth()) throw new Error("redirect");
 
 const activityList = document.querySelector("#activity-list");
 
-const EVENT_TYPE_LABELS = {
-  turn_completed: "Turn",
-  project_cleared: "Project Clear",
-};
-
-const PROVIDER_LABELS = {
-  claude_code: "Claude Code",
-};
+function formatDate(isoString) {
+  return new Date(isoString).toLocaleString(undefined, {
+    month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
 
 function renderActivity(items) {
   if (!activityList) return;
 
   if (items.length === 0) {
-    activityList.className = "empty-state";
-    activityList.textContent = "No growth activity yet.";
+    activityList.className = "empty-state activity-empty";
+    activityList.innerHTML = `
+      No activity yet.
+      <a href="/setup" class="activity-empty-link">Set up the plugin</a> to start tracking.
+    `;
     return;
   }
 
-  activityList.className = "activity-list";
+  activityList.className = "activity-table";
   activityList.innerHTML = items
     .map((item) => {
-      const label = EVENT_TYPE_LABELS[item.event_type] || item.event_type;
-      const provider = PROVIDER_LABELS[item.provider] || item.provider;
-      const date = new Date(item.occurred_at).toLocaleString(undefined, {
-        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-      });
+      const date = formatDate(item.occurred_at);
+      const isProjectClear = item.event_type === "project_cleared";
       const stats = item.stat_hints.length > 0
-        ? item.stat_hints.map((hint) => `<code>${escapeHtml(hint)}</code>`).join(" · ")
-        : null;
+        ? item.stat_hints.map((h) => `<code class="stat-hint">${escapeHtml(h)}</code>`).join("")
+        : "";
       return `
-        <article class="activity-card">
-          <div class="activity-card-header">
-            <h3>${escapeHtml(label)}</h3>
-            <span class="activity-date">${date}</span>
-          </div>
-          <p>${escapeHtml(item.summary)}</p>
-          <div class="activity-card-meta">
-            <span>${escapeHtml(provider)}</span>
-            ${stats ? `<span>${stats}</span>` : ""}
-          </div>
-        </article>
+        <div class="activity-row ${isProjectClear ? "activity-row-highlight" : ""}">
+          <span class="activity-row-date">${date}</span>
+          <span class="activity-row-summary">${escapeHtml(item.summary)}</span>
+          <span class="activity-row-stats">${stats}</span>
+        </div>
       `;
     })
     .join("");

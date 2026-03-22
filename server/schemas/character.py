@@ -9,6 +9,7 @@ class CharacterResponse(BaseModel):
     character_class: str
     level: int
     exp: int
+    exp_to_next_level: int = 0
     impl: int
     focus: int
     efficiency: int

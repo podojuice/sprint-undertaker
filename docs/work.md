@@ -62,15 +62,14 @@
   - 제품/브랜드 이름 후보 정리
   - 최종 이름 결정 후 문서와 UI 카피 반영
 - [ ] 앱 UX 개선
-  - [ ] API 서버 로그에 시간(timestamp) 찍히도록 수정
-  - [ ] `/app` recent growth 패널을 시간·이벤트·스탯 3열로 간결하게 정리
-  - [ ] `/app` titles 패널에서 중복 문구 제거, 획득/미획득만 직관적으로 표시
-  - [ ] 화면 구조 분리
-    - app 설치 가이드 페이지 분리
-    - 로그인 페이지 분리
-    - 캐릭터 상세 status 페이지 분리
-  - [ ] 칭호 장착/해제 API 추가
-  - [ ] 웹 앱에서 active title 변경 UI 추가
+  - [x] API 서버 로그에 시간(timestamp) 찍히도록 수정
+  - [x] `/history` recent growth를 시간·요약·스탯 3열 compact row로 정리
+  - [x] `/character` titles 패널: active 뱃지, 중복 문구 제거, equip 버튼 추가
+  - [x] 화면 구조 분리 (login, character, history, setup 각 전용 페이지)
+  - [x] 칭호 장착/해제 API 추가 (`PATCH /api/characters/me/title`)
+  - [x] 웹 앱에서 active title 변경 UI 추가 (Equip/Unequip 버튼)
+  - [x] EXP 진행 바 (레벨업까지 시각화)
+  - [x] 캐릭터 페이지 사이드바에 weekly project 진행 상황 표시
   - [ ] organization dashboard 추가
     - 멤버 레벨
     - 총 활동량

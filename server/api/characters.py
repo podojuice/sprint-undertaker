@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy import and_, select
 
 from server.api.deps import DbSession, check_plugin_upgrade, get_current_installation, get_current_user
@@ -189,7 +190,47 @@ async def get_my_character(
             select(Character).where(Character.user_id == current_user.id)
         )
     ).scalar_one()
-    return CharacterResponse.model_validate(character)
+    data = CharacterResponse.model_validate(character)
+    data.exp_to_next_level = max(0, required_exp_for_level(character.level) - character.exp)
+    return data
+
+
+class EquipTitleRequest(BaseModel):
+    title: str | None
+
+
+@router.patch("/me/title", response_model=CharacterResponse)
+async def equip_title(
+    body: EquipTitleRequest,
+    db: DbSession,
+    current_user: User = Depends(get_current_user),
+) -> CharacterResponse:
+    character = (
+        await db.execute(
+            select(Character).where(Character.user_id == current_user.id)
+        )
+    ).scalar_one()
+
+    if body.title is not None:
+        owned = (
+            await db.execute(
+                select(UserTitle)
+                .join(Title, Title.id == UserTitle.title_id)
+                .where(
+                    UserTitle.user_id == current_user.id,
+                    Title.name == body.title,
+                )
+            )
+        ).scalar_one_or_none()
+        if owned is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Title not owned")
+
+    character.title = body.title
+    await db.commit()
+    await db.refresh(character)
+    data = CharacterResponse.model_validate(character)
+    data.exp_to_next_level = max(0, required_exp_for_level(character.level) - character.exp)
+    return data
 
 
 @router.get("/me/activity", response_model=CharacterActivityListResponse)
