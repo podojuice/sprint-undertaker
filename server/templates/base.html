@@ -14,13 +14,40 @@
           <a href="/character">Character</a>
           <a href="/history">History</a>
           <a href="/setup">Setup</a>
-          <a href="/login">Login</a>
+          <a id="nav-login" href="/login">Login</a>
+          <button id="nav-logout" class="button button-ghost nav-logout hidden" type="button">Logout</button>
         </nav>
       </header>
       <main>
         {% block content %}{% endblock %}
       </main>
     </div>
+    <script>
+      (function () {
+        const KEY = "sprint_undertaker_access_token";
+        function isExpired(token) {
+          try {
+            const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+            return payload.exp && Date.now() / 1000 > payload.exp;
+          } catch (_) { return true; }
+        }
+        let token = localStorage.getItem(KEY);
+        if (token && isExpired(token)) {
+          localStorage.removeItem(KEY);
+          token = null;
+        }
+        const login = document.getElementById("nav-login");
+        const logout = document.getElementById("nav-logout");
+        if (token) {
+          login?.classList.add("hidden");
+          logout?.classList.remove("hidden");
+        }
+        logout?.addEventListener("click", function () {
+          localStorage.removeItem(KEY);
+          window.location.href = "/login";
+        });
+      })();
+    </script>
     {% block scripts %}{% endblock %}
   </body>
 </html>

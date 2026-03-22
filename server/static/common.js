@@ -40,9 +40,21 @@ function authHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+function handleUnauthorized() {
+  clearToken();
+  const login = document.getElementById("nav-login");
+  const logout = document.getElementById("nav-logout");
+  login?.classList.remove("hidden");
+  logout?.classList.add("hidden");
+}
+
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, options);
   const data = await response.json().catch(() => ({}));
+  if (response.status === 401 && !url.startsWith("/api/auth/")) {
+    handleUnauthorized();
+    throw new Error(data.detail || "Session expired. Please log in again.");
+  }
   if (!response.ok) throw new Error(data.detail || "Request failed");
   return data;
 }

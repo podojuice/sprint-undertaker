@@ -12,10 +12,7 @@ class CharacterResponse(BaseModel):
     exp_to_next_level: int = 0
     impl: int
     focus: int
-    efficiency: int
-    versatility: int
     stability: int
-    endurance: int
     title: str | None
     created_at: datetime
     updated_at: datetime

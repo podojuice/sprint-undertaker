@@ -16,6 +16,7 @@
       <input name="password" type="password" placeholder="password" required />
       <input name="character_name" type="text" placeholder="character name" required />
       <button class="button button-primary" type="submit">Create Account</button>
+      <p id="register-error" class="form-error hidden"></p>
     </form>
   </article>
 
@@ -25,11 +26,10 @@
       <input name="email" type="email" placeholder="email" required />
       <input name="password" type="password" placeholder="password" required />
       <button class="button button-secondary" type="submit">Login</button>
+      <p id="login-error" class="form-error hidden"></p>
     </form>
   </article>
 </div>
-
-<div id="auth-status" class="auth-status-bar"></div>
 {% endblock %}
 
 {% block scripts %}

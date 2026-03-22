@@ -1,9 +1,18 @@
 const registerForm = document.querySelector("#register-form");
 const loginForm = document.querySelector("#login-form");
-const authStatus = document.querySelector("#auth-status");
+const registerError = document.querySelector("#register-error");
+const loginError = document.querySelector("#login-error");
 
-function setStatus(message) {
-  if (authStatus) authStatus.textContent = message;
+function showError(el, message) {
+  if (!el) return;
+  el.textContent = message;
+  el.classList.remove("hidden");
+}
+
+function clearError(el) {
+  if (!el) return;
+  el.textContent = "";
+  el.classList.add("hidden");
 }
 
 if (getToken()) {
@@ -12,6 +21,7 @@ if (getToken()) {
 
 async function register(event) {
   event.preventDefault();
+  clearError(registerError);
   const formData = new FormData(registerForm);
   try {
     const data = await jsonRequest("/api/auth/register", {
@@ -22,12 +32,13 @@ async function register(event) {
     setToken(data.access_token);
     window.location.href = "/character";
   } catch (error) {
-    setStatus(error.message);
+    showError(registerError, error.message);
   }
 }
 
 async function login(event) {
   event.preventDefault();
+  clearError(loginError);
   const formData = new FormData(loginForm);
   try {
     const data = await jsonRequest("/api/auth/login", {
@@ -38,7 +49,7 @@ async function login(event) {
     setToken(data.access_token);
     window.location.href = "/character";
   } catch (error) {
-    setStatus(error.message);
+    showError(loginError, error.message);
   }
 }
 

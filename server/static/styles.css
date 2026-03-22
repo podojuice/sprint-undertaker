@@ -519,6 +519,16 @@ pre {
 }
 
 /* Login page */
+.form-error {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(180, 30, 30, 0.08);
+  border: 1px solid rgba(180, 30, 30, 0.2);
+  color: #b41e1e;
+  font-size: 0.92rem;
+}
+
 .auth-page-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
