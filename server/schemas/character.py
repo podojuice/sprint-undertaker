@@ -27,6 +27,7 @@ class CharacterResponse(BaseModel):
     focus: int
     stability: int
     title: str | None
+    is_public: bool = False
     created_at: datetime
     updated_at: datetime
 
