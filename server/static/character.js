@@ -151,6 +151,48 @@ function renderProject(project) {
   `;
 }
 
+function renderVisibility(character) {
+  const existing = document.querySelector("#visibility-panel");
+  if (existing) existing.remove();
+
+  const panel = document.createElement("section");
+  panel.id = "visibility-panel";
+  panel.className = "panel visibility-panel";
+
+  const profileUrl = `${location.origin}/u/${encodeURIComponent(character.name)}`;
+  panel.innerHTML = `
+    <div class="visibility-row">
+      <div>
+        <strong>Public profile</strong>
+        <p>Share your character page with others.</p>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="visibility-toggle" ${character.is_public ? "checked" : ""}>
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+    ${character.is_public ? `<div class="visibility-link"><a href="${profileUrl}" target="_blank">${profileUrl}</a></div>` : ""}
+  `;
+
+  document.querySelector(".character-main")?.appendChild(panel);
+
+  panel.querySelector("#visibility-toggle")?.addEventListener("change", async (e) => {
+    const checked = e.target.checked;
+    try {
+      await jsonRequest("/api/characters/me/visibility", {
+        method: "PATCH",
+        headers: { ...authHeaders(), "Content-Type": "application/json" },
+        body: JSON.stringify({ is_public: checked }),
+      });
+      character.is_public = checked;
+      renderVisibility(character);
+    } catch (err) {
+      e.target.checked = !checked;
+      alert(err.message);
+    }
+  });
+}
+
 async function load() {
   try {
     const [character, titles, project] = await Promise.all([
@@ -161,6 +203,7 @@ async function load() {
     renderCharacter(character);
     renderTitles(titles);
     renderProject(project);
+    renderVisibility(character);
   } catch (error) {
     if (characterCard) {
       characterCard.className = "panel character-card-panel empty-state";

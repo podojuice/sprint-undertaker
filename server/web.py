@@ -4,6 +4,12 @@ from pathlib import Path
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import select
+
+from server.database import SessionLocal
+from server.models.character import Character
+from server.models.title import Title, TitleVisibility, UserTitle
+from server.services.progression import required_exp_for_level
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
@@ -50,6 +56,63 @@ async def character_page(request: Request) -> HTMLResponse:
 @router.get("/history", response_class=HTMLResponse)
 async def history_page(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(request, "history.html", {"request": request})
+
+
+@router.get("/u/{nickname}", response_class=HTMLResponse)
+async def public_profile(request: Request, nickname: str) -> HTMLResponse:
+    async with SessionLocal() as db:
+        character = (
+            await db.execute(
+                select(Character).where(
+                    Character.name == nickname,
+                    Character.is_public.is_(True),
+                )
+            )
+        ).scalar_one_or_none()
+
+        if character is None:
+            return templates.TemplateResponse(
+                request, "profile.html", {"request": request, "profile": None, "nickname": nickname},
+                status_code=404,
+            )
+
+        titles = (
+            await db.execute(
+                select(Title.name)
+                .join(UserTitle, UserTitle.title_id == Title.id)
+                .where(
+                    UserTitle.user_id == character.user_id,
+                    Title.visibility == TitleVisibility.PUBLIC,
+                )
+                .order_by(UserTitle.earned_at)
+            )
+        ).scalars().all()
+
+        exp_to_next = max(0, required_exp_for_level(character.level) - character.exp)
+        exp_total = character.exp + exp_to_next
+        exp_pct = round(character.exp / exp_total * 100) if exp_total > 0 else 0
+
+        return templates.TemplateResponse(
+            request,
+            "profile.html",
+            {
+                "request": request,
+                "profile": {
+                    "name": character.name,
+                    "character_class": character.character_class,
+                    "level": character.level,
+                    "exp": character.exp,
+                    "exp_to_next": exp_to_next,
+                    "exp_pct": exp_pct,
+                    "impl": character.impl,
+                    "focus": character.focus,
+                    "stability": character.stability,
+                    "title": character.title,
+                    "titles": list(titles),
+                },
+                "nickname": nickname,
+            },
+        )
 
 
 @router.get("/setup", response_class=HTMLResponse)

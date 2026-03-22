@@ -16,6 +16,7 @@ from server.schemas.character import (
     CharacterActivityListResponse,
     CharacterResponse,
     CharacterStatusResponse,
+    PublicProfileResponse,
     WeeklyProjectStatusResponse,
 )
 from server.schemas.title import TitleListItemResponse
@@ -267,3 +268,57 @@ async def get_my_activity(
         )
 
     return CharacterActivityListResponse(items=items)
+
+
+class VisibilityRequest(BaseModel):
+    is_public: bool
+
+
+@router.patch("/me/visibility")
+async def set_visibility(
+    body: VisibilityRequest,
+    db: DbSession,
+    current_user: User = Depends(get_current_user),
+) -> dict[str, bool]:
+    character = (
+        await db.execute(select(Character).where(Character.user_id == current_user.id))
+    ).scalar_one()
+    character.is_public = body.is_public
+    await db.commit()
+    return {"is_public": character.is_public}
+
+
+@router.get("/profile/{nickname}", response_model=PublicProfileResponse)
+async def get_public_profile(nickname: str, db: DbSession) -> PublicProfileResponse:
+    character = (
+        await db.execute(
+            select(Character).where(Character.name == nickname, Character.is_public.is_(True))
+        )
+    ).scalar_one_or_none()
+    if character is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+
+    unlocked_public_titles = (
+        await db.execute(
+            select(Title.name)
+            .join(UserTitle, UserTitle.title_id == Title.id)
+            .where(
+                UserTitle.user_id == character.user_id,
+                Title.visibility == TitleVisibility.PUBLIC,
+            )
+            .order_by(UserTitle.earned_at)
+        )
+    ).scalars().all()
+
+    return PublicProfileResponse(
+        name=character.name,
+        character_class=character.character_class,
+        level=character.level,
+        exp=character.exp,
+        exp_to_next_level=max(0, required_exp_for_level(character.level) - character.exp),
+        impl=character.impl,
+        focus=character.focus,
+        stability=character.stability,
+        title=character.title,
+        titles=list(unlocked_public_titles),
+    )

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.name if profile else nickname }} — Sprint Undertaker{% endblock %}
+
+{% block content %}
+{% if not profile %}
+<section class="page-intro">
+  <p class="eyebrow">Public Profile</p>
+  <h1>Profile not found.</h1>
+  <p class="lede">{{ nickname }} doesn't exist or hasn't made their profile public.</p>
+</section>
+{% else %}
+<div class="character-page-grid">
+  <section class="character-main">
+    <div class="panel character-card-panel">
+      <div class="char-header">
+        <div>
+          <h2 class="char-name">{{ profile.name }}</h2>
+          <div class="character-meta">Lv.{{ profile.level }} · {{ profile.character_class }}{% if profile.title %} · <strong>{{ profile.title }}</strong>{% endif %}</div>
+        </div>
+        <span class="char-level-badge">Lv.{{ profile.level }}</span>
+      </div>
+      <div class="exp-bar-wrap">
+        <div class="exp-bar-track">
+          <div class="exp-bar-fill" style="width: {{ profile.exp_pct }}%"></div>
+        </div>
+        <span class="exp-bar-label">{{ profile.exp }} / {{ profile.exp + profile.exp_to_next }} EXP</span>
+      </div>
+      <div class="character-stats">
+        <div><span>Impl</span><strong>{{ profile.impl }}</strong></div>
+        <div><span>Focus</span><strong>{{ profile.focus }}</strong></div>
+        <div><span>Stability</span><strong>{{ profile.stability }}</strong></div>
+      </div>
+    </div>
+
+    {% if profile.titles %}
+    <section class="panel title-panel-card">
+      <div class="panel-header">
+        <h2>Titles</h2>
+        <span class="title-summary">{{ profile.titles | length }}</span>
+      </div>
+      <div class="profile-title-grid">
+        {% for t in profile.titles %}
+        <span class="profile-title-chip {% if t == profile.title %}is-active{% endif %}">
+          {% if t == profile.title %}✦ {% endif %}{{ t }}
+        </span>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </section>
+
+  <aside class="character-sidebar">
+    <div class="panel character-image-panel">
+      <div class="character-image-placeholder">
+        <span>Art</span>
+        <p>coming soon</p>
+      </div>
+    </div>
+  </aside>
+</div>
+{% endif %}
+{% endblock %}

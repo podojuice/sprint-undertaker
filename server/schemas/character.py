@@ -3,6 +3,19 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class PublicProfileResponse(BaseModel):
+    name: str
+    character_class: str
+    level: int
+    exp: int
+    exp_to_next_level: int
+    impl: int
+    focus: int
+    stability: int
+    title: str | None
+    titles: list[str]  # PUBLIC unlocked title names
+
+
 class CharacterResponse(BaseModel):
     id: int
     name: str

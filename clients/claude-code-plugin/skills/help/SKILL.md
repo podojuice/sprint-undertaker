@@ -14,4 +14,5 @@ Output the following exactly as a code block:
   /undertaker:character-status 캐릭터 상태 조회 (레벨, 스탯, 칭호, 알림)
   /undertaker:titles           보유 칭호 목록 조회
   /undertaker:project          주간 프로젝트 진행률 조회
+  /undertaker:profile          다른 유저 공개 프로필 조회
 ```

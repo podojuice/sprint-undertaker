@@ -19,11 +19,12 @@ class Character(Base):
     exp: Mapped[int] = mapped_column(default=0, nullable=False)
     impl: Mapped[int] = mapped_column(default=0, nullable=False)
     focus: Mapped[int] = mapped_column(default=0, nullable=False)
-    efficiency: Mapped[int] = mapped_column(default=0, nullable=False)
-    versatility: Mapped[int] = mapped_column(default=0, nullable=False)
     stability: Mapped[int] = mapped_column(default=0, nullable=False)
-    endurance: Mapped[int] = mapped_column(default=0, nullable=False)
+    # efficiency: Mapped[int] = mapped_column(default=0, nullable=False)
+    # versatility: Mapped[int] = mapped_column(default=0, nullable=False)
+    # endurance: Mapped[int] = mapped_column(default=0, nullable=False)
     title: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    is_public: Mapped[bool] = mapped_column(default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
