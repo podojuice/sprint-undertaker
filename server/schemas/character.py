@@ -36,6 +36,15 @@ class CharacterActivityListResponse(BaseModel):
     items: list[CharacterActivityItemResponse]
 
 
+class WeeklyProjectStatusResponse(BaseModel):
+    project_title: str
+    description: str
+    progress_value: int
+    target_progress: int
+    is_completed: bool
+    ends_at: datetime
+
+
 class CharacterStatusResponse(BaseModel):
     name: str
     character_class: str

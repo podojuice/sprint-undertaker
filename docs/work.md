@@ -93,8 +93,11 @@
     - [x] `scripts/status.py` — API 호출 후 캐릭터 카드 콘솔 출력
     - [x] 스탯은 MVP 유효 스탯(impl, stability, focus)만 표시
     - [ ] 미확인 notification 요약도 함께 표시 (notification 시스템 구현 후)
-  - [ ] `/rpg-project` skill 구현
-    - 주간 프로젝트 진행률 조회
+  - [x] `/undertaker:titles` skill 구현
+  - [x] `/undertaker:help` skill 구현
+  - [x] `/undertaker:project` skill 구현
+    - [x] `GET /api/characters/weekly-project` 엔드포인트 추가
+    - [x] 진행률 바 + 종료일 표시
   - 웹 없이도 현재 상태와 진행률 조회 가능하게 구성
 - [x] Notification 시스템 구현
   - [x] `notifications` 테이블 설계 및 마이그레이션
@@ -102,7 +105,7 @@
   - [x] 이벤트 처리 시 notification 레코드 생성 (progression, title, project clear)
   - [x] `/api/notifications/me` 조회 API (unread만 반환)
   - [x] 확인 처리 (read mark) API
-  - [ ] `/rpg-status` skill에서 미확인 notification 표시
+  - [x] `/rpg-status` skill에서 미확인 notification 표시
   - [ ] hook에서 desktop notification 보내는 것은 MVP에서 제외
 - [x] 칭호 작업 마무리
   - 마이그레이션 적용 검증

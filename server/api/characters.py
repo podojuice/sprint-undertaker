@@ -9,11 +9,13 @@ from server.models.event import ActivityEvent
 from server.models.installation import ProviderInstallation
 from server.models.title import Title, TitleVisibility, UserTitle
 from server.models.user import User
+from server.models.weekly_project import ProjectProgress, WeeklyProject
 from server.schemas.character import (
     CharacterActivityItemResponse,
     CharacterActivityListResponse,
     CharacterResponse,
     CharacterStatusResponse,
+    WeeklyProjectStatusResponse,
 )
 from server.schemas.title import TitleListItemResponse
 from server.services.progression import required_exp_for_level
@@ -93,6 +95,45 @@ async def get_character_status(
         focus=character.focus,
         title=character.title,
         upgrade_notice=check_plugin_upgrade(x_plugin_version),
+    )
+
+
+@router.get("/weekly-project", response_model=WeeklyProjectStatusResponse | None)
+async def get_weekly_project_status(
+    db: DbSession,
+    installation: ProviderInstallation = Depends(get_current_installation),
+) -> WeeklyProjectStatusResponse | None:
+    from datetime import UTC, datetime
+    now = datetime.now(UTC)
+    project = (
+        await db.execute(
+            select(WeeklyProject).where(
+                WeeklyProject.active.is_(True),
+                WeeklyProject.starts_at <= now,
+                WeeklyProject.ends_at >= now,
+            ).order_by(WeeklyProject.id.desc())
+        )
+    ).scalar_one_or_none()
+
+    if project is None:
+        return None
+
+    progress = (
+        await db.execute(
+            select(ProjectProgress).where(
+                ProjectProgress.project_id == project.id,
+                ProjectProgress.user_id == installation.user_id,
+            )
+        )
+    ).scalar_one_or_none()
+
+    return WeeklyProjectStatusResponse(
+        project_title=project.title,
+        description=project.description,
+        progress_value=progress.progress_value if progress else 0,
+        target_progress=project.target_progress,
+        is_completed=progress.is_completed if progress else False,
+        ends_at=project.ends_at,
     )
 
 

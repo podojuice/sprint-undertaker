@@ -1,12 +1,12 @@
 ---
-name: character-status
-description: Show your Sprint Undertaker character status — level, stats, and active title
+name: titles
+description: Show your Sprint Undertaker title collection — unlocked and locked titles
 ---
 
 Run the following command:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/status.py"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/titles.py"
 ```
 
 Then output the result as a code block in your response so the user can see it directly. Do not summarize or reformat the content.
