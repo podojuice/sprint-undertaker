@@ -1,90 +1,106 @@
-# sprint-undertaker
+# Sprint Undertaker
 
-FastAPI 기반의 멀티 provider 개발 RPG 서버입니다.
+Turn your Claude Code activity into RPG character growth.
 
-## Docs
+Sprint Undertaker tracks your coding sessions through Claude Code hooks and converts them into experience points, stats, and titles — without ever collecting your actual code, prompts, or file paths.
 
-앞으로 문서는 아래 두 파일만 계속 갱신합니다.
+## How it works
 
-- [docs/product.md](/Users/users/workspace/sprint-undertaker/docs/product.md): 제품 정의, 범위, 원칙, 방향
-- [docs/work.md](/Users/users/workspace/sprint-undertaker/docs/work.md): 현재 상태, 진행 중 작업, TODO, 기술 부채
+1. Install the Claude Code plugin
+2. A character is created when you register
+3. Every Claude Code turn (`UserPromptSubmit → Stop`) is summarized locally and sent as privacy-safe metadata
+4. The server calculates EXP, stats, and titles based on your activity
+5. Check your character status directly in Claude Code via the status line or `/undertaker:character-status`
 
-## Development
+## Claude Code Plugin
 
-로컬 Python 개발은 `uv` 기준으로 관리합니다.
+Install via the Claude Code marketplace:
 
-먼저 `uv`가 설치되어 있어야 합니다.
-
-```bash
-brew install uv
+```
+/plugin marketplace add https://github.com/podojuice/sprint-undertaker-marketplace
+/plugin install sprint-undertaker
 ```
 
-그 다음 가상환경과 의존성을 준비합니다.
+Then register or log in:
 
-```bash
-uv venv
-uv sync
+```
+/undertaker:register
+/undertaker:login
 ```
 
-앱을 로컬 프로세스로 실행할 때는 아래 명령을 사용합니다.
+Available skills:
+
+| Skill | Description |
+|---|---|
+| `/undertaker:character-status` | Character level, stats, and active title |
+| `/undertaker:titles` | All unlocked and locked titles |
+| `/undertaker:project` | Current weekly project progress |
+| `/undertaker:profile` | Look up another user's public profile |
+| `/undertaker:help` | List all available skills |
+
+## Privacy
+
+Sprint Undertaker never collects:
+
+- Code content
+- Prompt or response text
+- Command text
+- File or directory paths
+
+Only aggregated, non-identifying metadata is sent per turn: tool call counts, success/failure counts, prompt count, prompt length bucket, and model name.
+
+## Stats
+
+Characters grow across three stats:
+
+- **impl** — implementation activity (successful edits)
+- **stability** — reliability (successful validations)
+- **focus** — engagement depth (prompt count and length)
+
+Level formula: `required_exp = 100 × level^1.5`
+
+## Self-hosting
+
+Requirements: Python 3.12+, PostgreSQL, [uv](https://docs.astral.sh/uv/)
 
 ```bash
-uv run uvicorn server.main:app --reload
-```
-
-Docker 개발 환경은 `.env.example`를 `.env`로 복사한 뒤 아래 명령으로 실행합니다.
-
-```bash
-cp .env.example .env
+git clone https://github.com/podojuice/sprint-undertaker
+cd sprint-undertaker
+cp .env.example .env  # fill in your values
 docker compose up --build
 ```
 
-DB 마이그레이션은 아래처럼 실행합니다.
+Run migrations:
 
 ```bash
-UV_CACHE_DIR=.uv-cache uv run alembic upgrade head
+uv run alembic upgrade head
 ```
 
-앱은 `http://localhost:8000`, Postgres는 `localhost:5432`로 열립니다.
+The app runs at `http://localhost:8000`.
 
-헬스체크:
+### Environment variables
 
-```bash
-curl http://localhost:8000/health
-```
+See `.env.example` for all required variables. Key ones:
 
-기본 웹 페이지:
+| Variable | Description |
+|---|---|
+| `RPG_DATABASE_URL` | PostgreSQL connection string |
+| `RPG_SECRET_KEY` | JWT signing secret |
+| `RPG_BASE_URL` | Public base URL of the server |
 
-- `/` : 랜딩 페이지
-- `/app` : 로그인, 캐릭터 상태, installation 생성
-- `/install/claude-code` : Claude Code hook 설치 안내
-
-## Environment
-
-개발 환경에서는 `docker-compose.yml`로 app + postgres를 같이 띄웁니다.
-
-운영 환경에서는 Postgres를 별도 운영하고 `RPG_DATABASE_URL`만 해당 값으로 바꾸면 됩니다.
-
-## Testing
-
-테스트용 Postgres를 띄운 뒤 pytest를 실행합니다.
+### Testing
 
 ```bash
 docker compose up -d db_test
-RPG_DATABASE_URL=postgresql+asyncpg://rpg:rpg@localhost:5433/rpg_test UV_CACHE_DIR=.uv-cache uv run pytest
+RPG_DATABASE_URL=postgresql+asyncpg://rpg:rpg@localhost:5433/rpg_test uv run pytest
 ```
 
-## Claude Code Hook
+## Tech stack
 
-Claude Code용 자동 수집 hook는 아래 경로에 있습니다.
+- **Server**: FastAPI, SQLAlchemy (async), Alembic, PostgreSQL
+- **Client**: Claude Code plugin (Python scripts + SKILL.md)
+- **Auth**: JWT + email verification
 
-- [clients/claude-code-hook/README.md](/Users/users/workspace/sprint-undertaker/clients/claude-code-hook/README.md)
-- [clients/claude-code-hook/sprint_undertaker_hook.py](/Users/users/workspace/sprint-undertaker/clients/claude-code-hook/sprint_undertaker_hook.py)
+## License
 
-로컬 파일 설치 대신 서버 installer도 사용할 수 있습니다.
-
-```bash
-curl -fsSL "http://localhost:8000/install/claude-code.sh?api_key=su_sk_...&installation_name=local-claude" | bash
-```
-
-설치 후에는 Claude settings에 hook snippet을 추가하면 되고, 이후 사용자는 Claude Code를 평소처럼 사용하면 됩니다.
+MIT
