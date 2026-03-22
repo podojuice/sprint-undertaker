@@ -207,6 +207,45 @@ def _spawn_flush() -> None:
     )
 
 
+def status_cache_path() -> Path:
+    return STATE_DIR / "status-cache.json"
+
+
+def _fetch_status_cache(base_url: str, api_key: str) -> None:
+    from urllib import request as urllib_request
+
+    headers = {"X-API-Key": api_key, "X-Plugin-Version": PLUGIN_VERSION}
+
+    try:
+        req = urllib_request.Request(f"{base_url}/api/characters/status", headers=headers)
+        with urllib_request.urlopen(req, timeout=5) as resp:
+            character = json.loads(resp.read().decode())
+    except Exception:
+        return
+
+    project = None
+    try:
+        req = urllib_request.Request(f"{base_url}/api/characters/weekly-project", headers=headers)
+        with urllib_request.urlopen(req, timeout=5) as resp:
+            project = json.loads(resp.read().decode())
+    except Exception:
+        pass
+
+    cache = {
+        "level": character.get("level"),
+        "title": character.get("title"),
+        "exp": character.get("exp"),
+        "exp_to_next_level": character.get("exp_to_next_level"),
+        "project": {
+            "title": project["project_title"],
+            "progress_value": project["progress_value"],
+            "target_progress": project["target_progress"],
+            "is_completed": project["is_completed"],
+        } if project else None,
+    }
+    write_json(status_cache_path(), cache)
+
+
 def flush_queue() -> None:
     load_env_file()
     server_url = os.environ.get("SPRINT_UNDERTAKER_SERVER_URL")
@@ -229,9 +268,10 @@ def flush_queue() -> None:
 
     from urllib import request as urllib_request
 
+    base_url = server_url.rstrip("/")
     body = json.dumps({"events": queue}).encode()
     req = urllib_request.Request(
-        f"{server_url.rstrip('/')}/api/events/batch",
+        f"{base_url}/api/events/batch",
         data=body,
         headers={
             "Content-Type": "application/json",
@@ -243,6 +283,7 @@ def flush_queue() -> None:
     try:
         with urllib_request.urlopen(req, timeout=10) as response:
             response.read()
+        _fetch_status_cache(base_url, api_key)
     except Exception:
         # restore queue on failure so events aren't lost
         path.write_text(json.dumps(queue, separators=(",", ":")) + "\n")

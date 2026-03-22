@@ -18,10 +18,15 @@ router = APIRouter(include_in_schema=False)
 
 
 PLUGIN_DIR_DEFAULT = "$HOME/.config/sprint-undertaker/plugin"
+STATUSLINE_SCRIPT = "$HOME/.config/sprint-undertaker/plugin/scripts/statusline.py"
 
 
 def build_plugin_dir_snippet() -> str:
     return json.dumps({"pluginDirs": [PLUGIN_DIR_DEFAULT]}, indent=2)
+
+
+def build_statusline_snippet() -> str:
+    return json.dumps({"statusLine": {"type": "command", "command": f"python3 {STATUSLINE_SCRIPT}"}}, indent=2)
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -124,5 +129,6 @@ async def setup_page(request: Request) -> HTMLResponse:
             "request": request,
             "plugin_dir_snippet": build_plugin_dir_snippet(),
             "plugin_dir_default": PLUGIN_DIR_DEFAULT,
+            "statusline_snippet": build_statusline_snippet(),
         },
     )

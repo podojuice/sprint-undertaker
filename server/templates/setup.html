@@ -61,12 +61,28 @@
     <span class="step-badge">4</span>
     <div class="setup-step-body">
       <strong>Use Claude Code normally</strong>
-      <p>Hooks run in the background. <code>/sprint-undertaker:character-status</code> shows your character level, stats, and titles in the console.</p>
+      <p>Hooks run in the background. <code>/undertaker:character-status</code> shows your character level, stats, and titles in the console.</p>
       <ul class="flat-list">
         <li>No prompt text uploaded</li>
         <li>No file paths uploaded</li>
         <li>Only turn summary counters and buckets are sent</li>
       </ul>
+    </div>
+  </div>
+
+  <div class="setup-step">
+    <span class="step-badge" style="background: var(--muted);">+</span>
+    <div class="setup-step-body">
+      <strong>Optional — Show character in status line</strong>
+      <p>Display your level, title, and weekly project progress at the bottom of every Claude Code session.</p>
+      <div class="command-block">
+        <div class="command-header">
+          <span>.claude/settings.local.json</span>
+          <button class="button button-ghost copy-trigger" type="button" data-copy="{{ statusline_snippet }}">Copy</button>
+        </div>
+        <pre><code>{{ statusline_snippet }}</code></pre>
+      </div>
+      <p>The status line updates after every few turns as activity is synced. No extra API calls during a turn.</p>
     </div>
   </div>
 
