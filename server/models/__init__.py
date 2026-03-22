@@ -1,5 +1,6 @@
 from server.models.base import Base
 from server.models.character import Character
+from server.models.email_code import CodeType, EmailCode
 from server.models.event import ActivityEvent
 from server.models.installation import InstallationStatus, Provider, ProviderInstallation
 from server.models.organization import Organization
@@ -11,6 +12,8 @@ __all__ = [
     "ActivityEvent",
     "Base",
     "Character",
+    "CodeType",
+    "EmailCode",
     "InstallationStatus",
     "OrgRole",
     "Organization",

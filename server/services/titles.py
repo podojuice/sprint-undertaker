@@ -106,6 +106,9 @@ def _evaluate_rule(rule: dict, character: Character) -> bool:
         stat_name = str(params["stat"])
         value = int(params["value"])
         return int(getattr(character, stat_name, 0)) >= value
+    if kind == "level_threshold":
+        value = int(params["value"])
+        return character.level >= value
     if kind == "all_of":
         nested_rules = params.get("rules", [])
         return all(_evaluate_rule(nested_rule, character) for nested_rule in nested_rules)

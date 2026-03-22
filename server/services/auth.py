@@ -1,5 +1,5 @@
 from datetime import UTC, datetime, timedelta
-from secrets import token_urlsafe
+from secrets import randbelow, token_urlsafe
 
 from jose import jwt
 from passlib.context import CryptContext
@@ -26,3 +26,12 @@ def create_access_token(user_id: int) -> str:
 
 def generate_api_key() -> str:
     return f"su_sk_{token_urlsafe(24)}"
+
+
+def generate_verification_code() -> str:
+    """Generate a cryptographically random 6-digit numeric code."""
+    return f"{randbelow(1_000_000):06d}"
+
+
+def verification_code_expires_at() -> datetime:
+    return datetime.now(UTC) + timedelta(minutes=15)

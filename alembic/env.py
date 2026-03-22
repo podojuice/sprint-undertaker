@@ -19,7 +19,9 @@ def get_url() -> str:
         return database_url
 
     import os
+    from dotenv import load_dotenv
 
+    load_dotenv()
     return os.getenv(
         "RPG_DATABASE_URL",
         config.get_main_option("sqlalchemy.url"),
