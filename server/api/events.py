@@ -10,7 +10,8 @@ from server.models.event import ActivityEvent
 from server.models.installation import ProviderInstallation
 from server.models.notification import Notification
 from server.models.user import User
-from server.schemas.event import EventBatchRequest, EventBatchResponse, EventIngestRequest, EventIngestResponse
+from server.models.weekly_project import ProjectProgress, WeeklyProject
+from server.schemas.event import CharacterStatusCache, EventBatchRequest, EventBatchResponse, EventIngestRequest, EventIngestResponse, ProjectStatusCache
 from server.services.progression import apply_turn_summary
 from server.services.projects import apply_weekly_project_progress
 from server.services.titles import award_titles
@@ -134,6 +135,35 @@ async def ingest_event_batch(
     installation.last_seen_at = datetime.now(UTC)
     await db.commit()
 
+    now = datetime.now(UTC)
+    project_row = (
+        await db.execute(
+            select(WeeklyProject).where(
+                WeeklyProject.active.is_(True),
+                WeeklyProject.starts_at <= now,
+                WeeklyProject.ends_at >= now,
+            ).order_by(WeeklyProject.id.desc())
+        )
+    ).scalar_one_or_none()
+
+    project_cache: ProjectStatusCache | None = None
+    if project_row is not None:
+        progress_row = (
+            await db.execute(
+                select(ProjectProgress).where(
+                    ProjectProgress.project_id == project_row.id,
+                    ProjectProgress.user_id == user.id,
+                )
+            )
+        ).scalar_one_or_none()
+        project_cache = ProjectStatusCache(
+            title=project_row.title,
+            progress_value=progress_row.progress_value if progress_row else 0,
+            target_progress=project_row.target_progress,
+            is_completed=progress_row.is_completed if progress_row else False,
+        )
+
+    required_exp = int(100 * character.level ** 1.5)
     return EventBatchResponse(
         processed=len(payload.events),
         stat_changes=total_stat_changes,
@@ -142,4 +172,11 @@ async def ingest_event_batch(
         new_titles=list(dict.fromkeys(all_new_titles)),
         notifications=all_notifications,
         upgrade_notice=check_plugin_upgrade(x_plugin_version),
+        character=CharacterStatusCache(
+            level=character.level,
+            title=character.title,
+            exp=character.exp,
+            exp_to_next_level=required_exp,
+        ),
+        project=project_cache,
     )

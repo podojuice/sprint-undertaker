@@ -214,6 +214,26 @@ def status_cache_path() -> Path:
     return STATE_DIR / "status-cache.json"
 
 
+def _write_status_cache_from_batch(result: dict) -> None:
+    character = result.get("character")
+    if not character:
+        return
+    project = result.get("project")
+    cache = {
+        "level": character.get("level"),
+        "title": character.get("title"),
+        "exp": character.get("exp"),
+        "exp_to_next_level": character.get("exp_to_next_level"),
+        "project": {
+            "title": project["title"],
+            "progress_value": project["progress_value"],
+            "target_progress": project["target_progress"],
+            "is_completed": project["is_completed"],
+        } if project else None,
+    }
+    write_json(status_cache_path(), cache)
+
+
 def _fetch_status_cache(base_url: str, api_key: str) -> None:
     from urllib import request as urllib_request
 
@@ -285,8 +305,8 @@ def flush_queue() -> None:
     )
     try:
         with urllib_request.urlopen(req, timeout=10) as response:
-            response.read()
-        _fetch_status_cache(base_url, api_key)
+            result = json.loads(response.read().decode())
+        _write_status_cache_from_batch(result)
     except Exception:
         # restore queue on failure so events aren't lost
         path.write_text(json.dumps(queue, separators=(",", ":")) + "\n")

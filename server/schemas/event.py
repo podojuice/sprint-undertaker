@@ -41,6 +41,20 @@ class EventBatchRequest(BaseModel):
     events: list[EventIngestRequest] = Field(min_length=1, max_length=50)
 
 
+class CharacterStatusCache(BaseModel):
+    level: int
+    title: str | None
+    exp: int
+    exp_to_next_level: int
+
+
+class ProjectStatusCache(BaseModel):
+    title: str
+    progress_value: int
+    target_progress: int
+    is_completed: bool
+
+
 class EventBatchResponse(BaseModel):
     processed: int
     stat_changes: dict[str, int]
@@ -49,3 +63,5 @@ class EventBatchResponse(BaseModel):
     new_titles: list[str]
     notifications: list[str]
     upgrade_notice: str | None = None
+    character: CharacterStatusCache | None = None
+    project: ProjectStatusCache | None = None
