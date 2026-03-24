@@ -1,0 +1,16 @@
+version: 1.0
+runtime: python3
+build:
+  commands:
+    build:
+      - pip install -r requirements.txt
+run:
+  runtime-version: "3.12"
+  command: uvicorn server.main:app --host 0.0.0.0 --port 8080 --log-config log_config.json
+  network:
+    port: 8080
+  env:
+    - name: PYTHONDONTWRITEBYTECODE
+      value: "1"
+    - name: PYTHONUNBUFFERED
+      value: "1"
