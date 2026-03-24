@@ -19,6 +19,7 @@ STATE_DIR = Path(
 ).expanduser()
 
 BATCH_SIZE = 5
+MAX_QUEUE_SIZE = 100
 
 
 def _read_plugin_version() -> str:
@@ -189,6 +190,8 @@ def enqueue_turn(payload: dict) -> None:
         except (json.JSONDecodeError, ValueError):
             queue = []
     queue.append(event)
+    if len(queue) > MAX_QUEUE_SIZE:
+        queue = queue[-MAX_QUEUE_SIZE:]
     path.write_text(json.dumps(queue, separators=(",", ":")) + "\n")
     state_path.unlink(missing_ok=True)
 
